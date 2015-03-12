@@ -1,2 +1,23 @@
 
 
+
+- source files MUST BE require'able without preprocessing: it should be the production-ready file
+- should add a prerequire() function that preprocess a file with the given options and require it
+
+
+example:
+
+```
+/*#if var=value
+
+//*/
+```
+
+If the preprocessor variable 'var' equals 'value', then `/*#if var=value` is replaced by `//*#if var=value`.
+
+
+//#logger.log
+
+
+
+
