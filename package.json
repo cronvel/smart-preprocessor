@@ -1,6 +1,6 @@
 {
   "name": "smart-preprocessor",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "description": "A smart preprocessor for Node.",
   "main": "lib/smartPreprocessor.js",
   "directories": {
