@@ -416,20 +416,33 @@ describe( "Comment/uncomment" , function() {
 		) ;
 	} ) ;
 	
+	it( "Type coercion" , function() {
+		
+		expect( spp.preprocess( "//#debug:debug = true ;" ) ).to.be( "//debug = true ;" ) ;
+		expect( spp.preprocess( "//#debug:debug = true ;" , { debug: true } ) ).to.be( "debug = true ;" ) ;
+		expect( spp.preprocess( "//#debug:debug = true ;" , { debug: '0' } ) ).to.be( "debug = true ;" ) ;
+		expect( spp.preprocess( "//#debug:debug = true ;" , { debug: 0 } ) ).to.be( "debug = true ;" ) ;
+	} ) ;
 } ) ;
 
 
 
-describe( "Constants" , function() {
+describe( "Aliases" , function() {
 	
-	it( "Test" , function() {
-		code =
+	it( "Numeric aliases" , function() {
+		var aliases =
 			"//# debug # error -> 0\n" +
 			"//# debug # warning -> 1\n" +
 			"//# debug # verbose -> 2\n" +
 			"//# debug # trace -> 3\n" ;
 		
-		spp.preprocess( code ) ;
+		/*
+		expect( spp.preprocess( aliases + "//#debug=error:debug = true ;" , { debug: true } ) ).to.be( "//debug = true ;" ) ;
+		expect( spp.preprocess( aliases + "//#debug=error:debug = true ;" , { debug: 'error' } ) ).to.be( "debug = true ;" ) ;
+		expect( spp.preprocess( aliases + "//#debug=error:debug = true ;" , { debug: 'verbose' } ) ).to.be( "//debug = true ;" ) ;
+		*/
+		expect( spp.preprocess( aliases + "//#debug=error:debug = true ;" , { debug: 0 } ) ).to.be( "debug = true ;" ) ;
+		expect( spp.preprocess( aliases + "//#debug=error:debug = true ;" , { debug: '0' } ) ).to.be( "debug = true ;" ) ;
 	} ) ;
 	
 } ) ;
