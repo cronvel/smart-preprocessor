@@ -81,3 +81,73 @@ expect( spp.preprocess( " \t debug = true ; \t //# \t ! \t production \t " ) ).t
 expect( spp.preprocess( " \t debug = true ; \t //# \t ! \t production \t " , { production: true } ) ).to.be( "" ) ;
 ```
 
+Simple block uncomment behaviour.
+
+```js
+var code =
+	"var debug = false ;\n" +
+	"/*#debug :\n" +
+	"debug = true ;\n" +
+	"//*/\n" +
+	"console.log( debug ) ;\n" ;
+
+expect( spp.preprocess( code , {} ) ).to.be( 
+	"var debug = false ;\n" +
+	"/*\n" +
+	"debug = true ;\n" +
+	"//*/\n" +
+	"console.log( debug ) ;\n"
+) ;
+
+expect( spp.preprocess( code , { toto: true } ) ).to.be( 
+	"var debug = false ;\n" +
+	"/*\n" +
+	"debug = true ;\n" +
+	"//*/\n" +
+	"console.log( debug ) ;\n"
+) ;
+
+expect( spp.preprocess( code , { debug: true } ) ).to.be( 
+	"var debug = false ;\n" +
+	"//*\n" +
+	"debug = true ;\n" +
+	"//*/\n" +
+	"console.log( debug ) ;\n"
+) ;
+```
+
+Simple block comment behaviour.
+
+```js
+var code =
+	"var debug = false ;\n" +
+	"//*#! production\n" +
+	"debug = true ;\n" +
+	"//*/\n" +
+	"console.log( debug ) ;\n" ;
+
+expect( spp.preprocess( code , {} ) ).to.be( 
+	"var debug = false ;\n" +
+	"//*\n" +
+	"debug = true ;\n" +
+	"//*/\n" +
+	"console.log( debug ) ;\n"
+) ;
+
+expect( spp.preprocess( code , { toto: true } ) ).to.be( 
+	"var debug = false ;\n" +
+	"//*\n" +
+	"debug = true ;\n" +
+	"//*/\n" +
+	"console.log( debug ) ;\n"
+) ;
+
+expect( spp.preprocess( code , { production: true } ) ).to.be( 
+	"var debug = false ;\n" +
+	"/*\n" +
+	"debug = true ;\n" +
+	"//*/\n" +
+	"console.log( debug ) ;\n"
+) ;
+```
+

@@ -40,7 +40,6 @@ var expect = require( 'expect.js' ) ;
 
 describe( "preprocess()" , function() {
 	
-	
 	it( "Simple line uncomment behaviour" , function() {
 		
 		var code =
@@ -112,6 +111,74 @@ describe( "preprocess()" , function() {
 		
 		expect( spp.preprocess( " \t debug = true ; \t //# \t ! \t production \t " ) ).to.be( " \t debug = true ;" ) ;
 		expect( spp.preprocess( " \t debug = true ; \t //# \t ! \t production \t " , { production: true } ) ).to.be( "" ) ;
+	} ) ;
+	
+	it( "Simple block uncomment behaviour" , function() {
+		
+		var code =
+			"var debug = false ;\n" +
+			"/*#debug :\n" +
+			"debug = true ;\n" +
+			"//*/\n" +
+			"console.log( debug ) ;\n" ;
+		
+		expect( spp.preprocess( code , {} ) ).to.be( 
+			"var debug = false ;\n" +
+			"/*\n" +
+			"debug = true ;\n" +
+			"//*/\n" +
+			"console.log( debug ) ;\n"
+		) ;
+		
+		expect( spp.preprocess( code , { toto: true } ) ).to.be( 
+			"var debug = false ;\n" +
+			"/*\n" +
+			"debug = true ;\n" +
+			"//*/\n" +
+			"console.log( debug ) ;\n"
+		) ;
+		
+		expect( spp.preprocess( code , { debug: true } ) ).to.be( 
+			"var debug = false ;\n" +
+			"//*\n" +
+			"debug = true ;\n" +
+			"//*/\n" +
+			"console.log( debug ) ;\n"
+		) ;
+	} ) ;
+	
+	it( "Simple block comment behaviour" , function() {
+		
+		var code =
+			"var debug = false ;\n" +
+			"//*#! production\n" +
+			"debug = true ;\n" +
+			"//*/\n" +
+			"console.log( debug ) ;\n" ;
+		
+		expect( spp.preprocess( code , {} ) ).to.be( 
+			"var debug = false ;\n" +
+			"//*\n" +
+			"debug = true ;\n" +
+			"//*/\n" +
+			"console.log( debug ) ;\n"
+		) ;
+		
+		expect( spp.preprocess( code , { toto: true } ) ).to.be( 
+			"var debug = false ;\n" +
+			"//*\n" +
+			"debug = true ;\n" +
+			"//*/\n" +
+			"console.log( debug ) ;\n"
+		) ;
+		
+		expect( spp.preprocess( code , { production: true } ) ).to.be( 
+			"var debug = false ;\n" +
+			"/*\n" +
+			"debug = true ;\n" +
+			"//*/\n" +
+			"console.log( debug ) ;\n"
+		) ;
 	} ) ;
 	
 } ) ;
