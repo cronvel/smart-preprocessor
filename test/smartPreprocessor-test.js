@@ -29,13 +29,95 @@
 
 
 
-var smartPreprocessor = require( '../lib/smartPreprocessor.js' ) ;
+var spp = require( '../lib/smartPreprocessor.js' ) ;
+var fs = require( 'fs' ) ;
+
 var expect = require( 'expect.js' ) ;
 
 
-describe( "..." , function() {
+
+
+
+describe( "preprocess()" , function() {
 	
-	it( "Nothing to test ATM..." ) ;
+	
+	it( "Simple line uncomment behaviour" , function() {
+		
+		var code =
+			"var debug = false ;\n" +
+			"//#debug : debug = true ;\n" +
+			"console.log( debug ) ;\n" ;
+		
+		expect( spp.preprocess( code , {} ) ).to.be( 
+			"var debug = false ;\n" +
+			"console.log( debug ) ;\n"
+		) ;
+		
+		expect( spp.preprocess( code , { toto: true } ) ).to.be( 
+			"var debug = false ;\n" +
+			"console.log( debug ) ;\n"
+		) ;
+		
+		expect( spp.preprocess( code , { debug: true } ) ).to.be( 
+			"var debug = false ;\n" +
+			"debug = true ;\n" +
+			"console.log( debug ) ;\n"
+		) ;
+	} ) ;
+	
+	it( "Simple remove line behaviour" , function() {
+		
+		var code =
+			"var debug = false ;\n" +
+			"debug = true ; //#! production\n" +
+			"console.log( debug ) ;\n" ;
+		
+		expect( spp.preprocess( code , {} ) ).to.be( 
+			"var debug = false ;\n" +
+			"debug = true ;\n" +
+			"console.log( debug ) ;\n"
+		) ;
+		
+		expect( spp.preprocess( code , { toto: true } ) ).to.be( 
+			"var debug = false ;\n" +
+			"debug = true ;\n" +
+			"console.log( debug ) ;\n"
+		) ;
+		
+		expect( spp.preprocess( code , { production: true } ) ).to.be( 
+			"var debug = false ;\n" +
+			"console.log( debug ) ;\n"
+		) ;
+	} ) ;
+	
+	it( "Uncomment a line comment with various spacing behaviour" , function() {
+		
+		expect( spp.preprocess( "//#debug:debug = true ;" ) ).to.be( "" ) ;
+		expect( spp.preprocess( "//#debug:debug = true ;" , { debug: true } ) ).to.be( "debug = true ;" ) ;
+		
+		expect( spp.preprocess( "//# \t debug \t : \t debug = true ;" ) ).to.be( "" ) ;
+		expect( spp.preprocess( "//# \t debug \t : \t debug = true ;" , { debug: true } ) ).to.be( "debug = true ;" ) ;
+		
+		expect( spp.preprocess( " \t //# \t debug \t : \t debug = true ;" ) ).to.be( "" ) ;
+		expect( spp.preprocess( " \t //# \t debug \t : \t debug = true ;" , { debug: true } ) ).to.be( " \t debug = true ;" ) ;
+	} ) ;
+	
+	it( "Remove the line of a comment with various spacing behaviour" , function() {
+		
+		expect( spp.preprocess( "debug = true ;//#!production" ) ).to.be( "debug = true ;" ) ;
+		expect( spp.preprocess( "debug = true ;//#!production" , { production: true } ) ).to.be( "" ) ;
+		
+		expect( spp.preprocess( "debug = true ; \t //# \t ! \t production \t " ) ).to.be( "debug = true ;" ) ;
+		expect( spp.preprocess( "debug = true ; \t //# \t ! \t production \t " , { production: true } ) ).to.be( "" ) ;
+		
+		expect( spp.preprocess( " \t debug = true ; \t //# \t ! \t production \t " ) ).to.be( " \t debug = true ;" ) ;
+		expect( spp.preprocess( " \t debug = true ; \t //# \t ! \t production \t " , { production: true } ) ).to.be( "" ) ;
+	} ) ;
 	
 } ) ;
+
+
+//var code = fs.readFileSync( __dirname + '/codeSample/test1.js' , 'utf8' ) ;
+
+
 
