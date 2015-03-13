@@ -38,7 +38,7 @@ var expect = require( 'expect.js' ) ;
 
 
 
-describe( "preprocess()" , function() {
+describe( "Comment/uncomment" , function() {
 	
 	it( "Simple line uncomment behaviour" , function() {
 		
@@ -358,6 +358,78 @@ describe( "preprocess()" , function() {
 			"//*/\n" +
 			"fn2() ;\n"
 		) ;
+	} ) ;
+	
+	it( "Multiple adjacent preprocessor command" , function() {
+		
+		var code =
+			"fn1() ; \n" +
+			"//#trace : console.log( '[TRACE] Something happens.' ) ;\n" +
+			"//#verbose : console.log( '[VERBOSE] Something happens.' ) ;\n" +
+			"//#warning : console.log( '[WARNING] Something happens.' ) ;\n" +
+			"//#error : console.log( '[ERROR] Something happens.' ) ;\n" +
+			"fn2() ;\n" ;
+		
+		expect( spp.preprocess( code , {} ) ).to.be( 
+			"fn1() ; \n" +
+			"//console.log( '[TRACE] Something happens.' ) ;\n" +
+			"//console.log( '[VERBOSE] Something happens.' ) ;\n" +
+			"//console.log( '[WARNING] Something happens.' ) ;\n" +
+			"//console.log( '[ERROR] Something happens.' ) ;\n" +
+			"fn2() ;\n"
+		) ;
+		
+		expect( spp.preprocess( code , { toto: true } ) ).to.be( 
+			"fn1() ; \n" +
+			"//console.log( '[TRACE] Something happens.' ) ;\n" +
+			"//console.log( '[VERBOSE] Something happens.' ) ;\n" +
+			"//console.log( '[WARNING] Something happens.' ) ;\n" +
+			"//console.log( '[ERROR] Something happens.' ) ;\n" +
+			"fn2() ;\n"
+		) ;
+		
+		expect( spp.preprocess( code , { trace: true } ) ).to.be( 
+			"fn1() ; \n" +
+			"console.log( '[TRACE] Something happens.' ) ;\n" +
+			"//console.log( '[VERBOSE] Something happens.' ) ;\n" +
+			"//console.log( '[WARNING] Something happens.' ) ;\n" +
+			"//console.log( '[ERROR] Something happens.' ) ;\n" +
+			"fn2() ;\n"
+		) ;
+		
+		expect( spp.preprocess( code , { verbose: true } ) ).to.be( 
+			"fn1() ; \n" +
+			"//console.log( '[TRACE] Something happens.' ) ;\n" +
+			"console.log( '[VERBOSE] Something happens.' ) ;\n" +
+			"//console.log( '[WARNING] Something happens.' ) ;\n" +
+			"//console.log( '[ERROR] Something happens.' ) ;\n" +
+			"fn2() ;\n"
+		) ;
+		
+		expect( spp.preprocess( code , { trace: true , verbose: true , warning: true , error: true } ) ).to.be( 
+			"fn1() ; \n" +
+			"console.log( '[TRACE] Something happens.' ) ;\n" +
+			"console.log( '[VERBOSE] Something happens.' ) ;\n" +
+			"console.log( '[WARNING] Something happens.' ) ;\n" +
+			"console.log( '[ERROR] Something happens.' ) ;\n" +
+			"fn2() ;\n"
+		) ;
+	} ) ;
+	
+} ) ;
+
+
+
+describe( "Constants" , function() {
+	
+	it( "Test" , function() {
+		code =
+			"//# debug # error -> 0\n" +
+			"//# debug # warning -> 1\n" +
+			"//# debug # verbose -> 2\n" +
+			"//# debug # trace -> 3\n" ;
+		
+		spp.preprocess( code ) ;
 	} ) ;
 	
 } ) ;
