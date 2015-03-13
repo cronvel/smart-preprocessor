@@ -14,11 +14,13 @@ var code =
 
 expect( spp.preprocess( code , {} ) ).to.be( 
 	"var debug = false ;\n" +
+	"//debug = true ;\n" +
 	"console.log( debug ) ;\n"
 ) ;
 
 expect( spp.preprocess( code , { toto: true } ) ).to.be( 
 	"var debug = false ;\n" +
+	"//debug = true ;\n" +
 	"console.log( debug ) ;\n"
 ) ;
 
@@ -29,7 +31,7 @@ expect( spp.preprocess( code , { debug: true } ) ).to.be(
 ) ;
 ```
 
-Simple remove line behaviour.
+Simple line comment behaviour.
 
 ```js
 var code =
@@ -51,6 +53,7 @@ expect( spp.preprocess( code , { toto: true } ) ).to.be(
 
 expect( spp.preprocess( code , { production: true } ) ).to.be( 
 	"var debug = false ;\n" +
+	"//debug = true ;\n" +
 	"console.log( debug ) ;\n"
 ) ;
 ```
@@ -58,27 +61,27 @@ expect( spp.preprocess( code , { production: true } ) ).to.be(
 Uncomment a line comment with various spacing behaviour.
 
 ```js
-expect( spp.preprocess( "//#debug:debug = true ;" ) ).to.be( "" ) ;
+expect( spp.preprocess( "//#debug:debug = true ;" ) ).to.be( "//debug = true ;" ) ;
 expect( spp.preprocess( "//#debug:debug = true ;" , { debug: true } ) ).to.be( "debug = true ;" ) ;
 
-expect( spp.preprocess( "//# \t debug \t : \t debug = true ;" ) ).to.be( "" ) ;
+expect( spp.preprocess( "//# \t debug \t : \t debug = true ;" ) ).to.be( "//debug = true ;" ) ;
 expect( spp.preprocess( "//# \t debug \t : \t debug = true ;" , { debug: true } ) ).to.be( "debug = true ;" ) ;
 
-expect( spp.preprocess( " \t //# \t debug \t : \t debug = true ;" ) ).to.be( "" ) ;
+expect( spp.preprocess( " \t //# \t debug \t : \t debug = true ;" ) ).to.be( " \t //debug = true ;" ) ;
 expect( spp.preprocess( " \t //# \t debug \t : \t debug = true ;" , { debug: true } ) ).to.be( " \t debug = true ;" ) ;
 ```
 
-Remove the line of a comment with various spacing behaviour.
+Comment the line with various spacing behaviour.
 
 ```js
 expect( spp.preprocess( "debug = true ;//#!production" ) ).to.be( "debug = true ;" ) ;
-expect( spp.preprocess( "debug = true ;//#!production" , { production: true } ) ).to.be( "" ) ;
+expect( spp.preprocess( "debug = true ;//#!production" , { production: true } ) ).to.be( "//debug = true ;" ) ;
 
 expect( spp.preprocess( "debug = true ; \t //# \t ! \t production \t " ) ).to.be( "debug = true ;" ) ;
-expect( spp.preprocess( "debug = true ; \t //# \t ! \t production \t " , { production: true } ) ).to.be( "" ) ;
+expect( spp.preprocess( "debug = true ; \t //# \t ! \t production \t " , { production: true } ) ).to.be( "//debug = true ;" ) ;
 
 expect( spp.preprocess( " \t debug = true ; \t //# \t ! \t production \t " ) ).to.be( " \t debug = true ;" ) ;
-expect( spp.preprocess( " \t debug = true ; \t //# \t ! \t production \t " , { production: true } ) ).to.be( "" ) ;
+expect( spp.preprocess( " \t debug = true ; \t //# \t ! \t production \t " , { production: true } ) ).to.be( " \t //debug = true ;" ) ;
 ```
 
 Simple block uncomment behaviour.
@@ -148,6 +151,186 @@ expect( spp.preprocess( code , { production: true } ) ).to.be(
 	"debug = true ;\n" +
 	"//*/\n" +
 	"console.log( debug ) ;\n"
+) ;
+```
+
+Line uncomment behaviour with string comparison.
+
+```js
+var code =
+	"fn1() ;\n" +
+	"//#debug=trace : console.log( '[TRACE] Current state: ' , state ) ;\n" +
+	"fn2() ;\n" ;
+
+expect( spp.preprocess( code , {} ) ).to.be( 
+	"fn1() ;\n" +
+	"//console.log( '[TRACE] Current state: ' , state ) ;\n" +
+	"fn2() ;\n"
+) ;
+
+expect( spp.preprocess( code , { toto: true } ) ).to.be( 
+	"fn1() ;\n" +
+	"//console.log( '[TRACE] Current state: ' , state ) ;\n" +
+	"fn2() ;\n"
+) ;
+
+expect( spp.preprocess( code , { debug: true } ) ).to.be( 
+	"fn1() ;\n" +
+	"//console.log( '[TRACE] Current state: ' , state ) ;\n" +
+	"fn2() ;\n"
+) ;
+
+expect( spp.preprocess( code , { debug: 'toto' } ) ).to.be( 
+	"fn1() ;\n" +
+	"//console.log( '[TRACE] Current state: ' , state ) ;\n" +
+	"fn2() ;\n"
+) ;
+
+expect( spp.preprocess( code , { debug: 'trace' } ) ).to.be( 
+	"fn1() ;\n" +
+	"console.log( '[TRACE] Current state: ' , state ) ;\n" +
+	"fn2() ;\n"
+) ;
+```
+
+Line comment behaviour with string comparison.
+
+```js
+var code =
+	"fn1() ;\n" +
+	"console.log( '[VERBOSE] Loading...' ) ; //#!debug=error\n" +
+	"fn2() ;\n" ;
+
+expect( spp.preprocess( code , {} ) ).to.be( 
+	"fn1() ;\n" +
+	"console.log( '[VERBOSE] Loading...' ) ;\n" +
+	"fn2() ;\n"
+) ;
+
+expect( spp.preprocess( code , { toto: true } ) ).to.be( 
+	"fn1() ;\n" +
+	"console.log( '[VERBOSE] Loading...' ) ;\n" +
+	"fn2() ;\n"
+) ;
+
+expect( spp.preprocess( code , { debug: true } ) ).to.be( 
+	"fn1() ;\n" +
+	"console.log( '[VERBOSE] Loading...' ) ;\n" +
+	"fn2() ;\n"
+) ;
+
+expect( spp.preprocess( code , { debug: 'verbose' } ) ).to.be( 
+	"fn1() ;\n" +
+	"console.log( '[VERBOSE] Loading...' ) ;\n" +
+	"fn2() ;\n"
+) ;
+
+expect( spp.preprocess( code , { debug: 'error' } ) ).to.be( 
+	"fn1() ;\n" +
+	"//console.log( '[VERBOSE] Loading...' ) ;\n" +
+	"fn2() ;\n"
+) ;
+```
+
+Block uncomment behaviour with string comparison.
+
+```js
+var code =
+	"fn1() ;\n" +
+	"/*#debug=trace:\n" +
+	"console.log( '[TRACE] Current state: ' , state ) ;\n" +
+	"//*/\n" +
+	"fn2() ;\n" ;
+
+expect( spp.preprocess( code , {} ) ).to.be( 
+	"fn1() ;\n" +
+	"/*\n" +
+	"console.log( '[TRACE] Current state: ' , state ) ;\n" +
+	"//*/\n" +
+	"fn2() ;\n"
+) ;
+
+expect( spp.preprocess( code , { toto: true } ) ).to.be( 
+	"fn1() ;\n" +
+	"/*\n" +
+	"console.log( '[TRACE] Current state: ' , state ) ;\n" +
+	"//*/\n" +
+	"fn2() ;\n"
+) ;
+
+expect( spp.preprocess( code , { debug: true } ) ).to.be( 
+	"fn1() ;\n" +
+	"/*\n" +
+	"console.log( '[TRACE] Current state: ' , state ) ;\n" +
+	"//*/\n" +
+	"fn2() ;\n"
+) ;
+
+expect( spp.preprocess( code , { debug: 'toto' } ) ).to.be( 
+	"fn1() ;\n" +
+	"/*\n" +
+	"console.log( '[TRACE] Current state: ' , state ) ;\n" +
+	"//*/\n" +
+	"fn2() ;\n"
+) ;
+
+expect( spp.preprocess( code , { debug: 'trace' } ) ).to.be( 
+	"fn1() ;\n" +
+	"//*\n" +
+	"console.log( '[TRACE] Current state: ' , state ) ;\n" +
+	"//*/\n" +
+	"fn2() ;\n"
+) ;
+```
+
+Block comment behaviour with string comparison.
+
+```js
+var code =
+	"fn1() ;\n" +
+	"//*#!debug=error\n" +
+	"console.log( '[TRACE] Current state: ' , state ) ;\n" +
+	"//*/\n" +
+	"fn2() ;\n" ;
+
+expect( spp.preprocess( code , {} ) ).to.be( 
+	"fn1() ;\n" +
+	"//*\n" +
+	"console.log( '[TRACE] Current state: ' , state ) ;\n" +
+	"//*/\n" +
+	"fn2() ;\n"
+) ;
+
+expect( spp.preprocess( code , { toto: true } ) ).to.be( 
+	"fn1() ;\n" +
+	"//*\n" +
+	"console.log( '[TRACE] Current state: ' , state ) ;\n" +
+	"//*/\n" +
+	"fn2() ;\n"
+) ;
+
+expect( spp.preprocess( code , { debug: true } ) ).to.be( 
+	"fn1() ;\n" +
+	"//*\n" +
+	"console.log( '[TRACE] Current state: ' , state ) ;\n" +
+	"//*/\n" +
+	"fn2() ;\n"
+) ;
+
+expect( spp.preprocess( code , { debug: 'verbose' } ) ).to.be( 
+	"fn1() ;\n" +
+	"//*\n" +
+	"console.log( '[TRACE] Current state: ' , state ) ;\n" +
+	"//*/\n" +
+	"fn2() ;\n"
+) ;
+
+expect( spp.preprocess( code , { debug: 'error' } ) ).to.be( 
+	"fn1() ;\n" +
+	"/*\n" +
+	"console.log( '[TRACE] Current state: ' , state ) ;\n" +
+	"//*/\n" +
+	"fn2() ;\n"
 ) ;
 ```
 
