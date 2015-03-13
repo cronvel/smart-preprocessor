@@ -1,9 +1,11 @@
 # TOC
-   - [preprocess()](#preprocess)
+   - [Comment/uncomment](#commentuncomment)
+   - [Aliases](#aliases)
+   - [Assignment](#assignment)
 <a name=""></a>
  
-<a name="preprocess"></a>
-# preprocess()
+<a name="commentuncomment"></a>
+# Comment/uncomment
 Simple line uncomment behaviour.
 
 ```js
@@ -332,5 +334,124 @@ expect( spp.preprocess( code , { debug: 'error' } ) ).to.be(
 	"//*/\n" +
 	"fn2() ;\n"
 ) ;
+```
+
+Multiple adjacent preprocessor command.
+
+```js
+var code =
+	"fn1() ; \n" +
+	"//#trace : console.log( '[TRACE] Something happens.' ) ;\n" +
+	"//#verbose : console.log( '[VERBOSE] Something happens.' ) ;\n" +
+	"//#warning : console.log( '[WARNING] Something happens.' ) ;\n" +
+	"//#error : console.log( '[ERROR] Something happens.' ) ;\n" +
+	"fn2() ;\n" ;
+
+expect( spp.preprocess( code , {} ) ).to.be( 
+	"fn1() ; \n" +
+	"//console.log( '[TRACE] Something happens.' ) ;\n" +
+	"//console.log( '[VERBOSE] Something happens.' ) ;\n" +
+	"//console.log( '[WARNING] Something happens.' ) ;\n" +
+	"//console.log( '[ERROR] Something happens.' ) ;\n" +
+	"fn2() ;\n"
+) ;
+
+expect( spp.preprocess( code , { toto: true } ) ).to.be( 
+	"fn1() ; \n" +
+	"//console.log( '[TRACE] Something happens.' ) ;\n" +
+	"//console.log( '[VERBOSE] Something happens.' ) ;\n" +
+	"//console.log( '[WARNING] Something happens.' ) ;\n" +
+	"//console.log( '[ERROR] Something happens.' ) ;\n" +
+	"fn2() ;\n"
+) ;
+
+expect( spp.preprocess( code , { trace: true } ) ).to.be( 
+	"fn1() ; \n" +
+	"console.log( '[TRACE] Something happens.' ) ;\n" +
+	"//console.log( '[VERBOSE] Something happens.' ) ;\n" +
+	"//console.log( '[WARNING] Something happens.' ) ;\n" +
+	"//console.log( '[ERROR] Something happens.' ) ;\n" +
+	"fn2() ;\n"
+) ;
+
+expect( spp.preprocess( code , { verbose: true } ) ).to.be( 
+	"fn1() ; \n" +
+	"//console.log( '[TRACE] Something happens.' ) ;\n" +
+	"console.log( '[VERBOSE] Something happens.' ) ;\n" +
+	"//console.log( '[WARNING] Something happens.' ) ;\n" +
+	"//console.log( '[ERROR] Something happens.' ) ;\n" +
+	"fn2() ;\n"
+) ;
+
+expect( spp.preprocess( code , { trace: true , verbose: true , warning: true , error: true } ) ).to.be( 
+	"fn1() ; \n" +
+	"console.log( '[TRACE] Something happens.' ) ;\n" +
+	"console.log( '[VERBOSE] Something happens.' ) ;\n" +
+	"console.log( '[WARNING] Something happens.' ) ;\n" +
+	"console.log( '[ERROR] Something happens.' ) ;\n" +
+	"fn2() ;\n"
+) ;
+```
+
+Type coercion.
+
+```js
+expect( spp.preprocess( "//#debug:debug = true ;" ) ).to.be( "//debug = true ;" ) ;
+expect( spp.preprocess( "//#debug:debug = true ;" , { debug: true } ) ).to.be( "debug = true ;" ) ;
+expect( spp.preprocess( "//#debug:debug = true ;" , { debug: '0' } ) ).to.be( "debug = true ;" ) ;
+expect( spp.preprocess( "//#debug:debug = true ;" , { debug: 0 } ) ).to.be( "debug = true ;" ) ;
+```
+
+<a name="aliases"></a>
+# Aliases
+Numeric aliases.
+
+```js
+var aliases =
+	"//# debug # error ~ 0\n" +
+	"//# debug # warning ~ 1\n" +
+	"//# debug # verbose ~ 2\n" +
+	"//# debug # trace ~ 3\n" ;
+
+expect( spp.preprocess( aliases + "//#debug=error:debug = true ;" , { debug: true } ) ).to.be( "\n\n\n\n//debug = true ;" ) ;
+expect( spp.preprocess( aliases + "//#debug=error:debug = true ;" , { debug: 'error' } ) ).to.be( "\n\n\n\ndebug = true ;" ) ;
+expect( spp.preprocess( aliases + "//#debug=error:debug = true ;" , { debug: 'verbose' } ) ).to.be( "\n\n\n\n//debug = true ;" ) ;
+expect( spp.preprocess( aliases + "//#debug=error:debug = true ;" , { debug: 0 } ) ).to.be( "\n\n\n\ndebug = true ;" ) ;
+expect( spp.preprocess( aliases + "//#debug=error:debug = true ;" , { debug: '0' } ) ).to.be( "\n\n\n\ndebug = true ;" ) ;
+
+expect( spp.preprocess( aliases + "//#debug>=warning:debug = true ;" , { debug: 'error' } ) ).to.be( "\n\n\n\n//debug = true ;" ) ;
+expect( spp.preprocess( aliases + "//#debug>=warning:debug = true ;" , { debug: 'warning' } ) ).to.be( "\n\n\n\ndebug = true ;" ) ;
+expect( spp.preprocess( aliases + "//#debug>=warning:debug = true ;" , { debug: 'verbose' } ) ).to.be( "\n\n\n\ndebug = true ;" ) ;
+expect( spp.preprocess( aliases + "//#debug>=warning:debug = true ;" , { debug: 'trace' } ) ).to.be( "\n\n\n\ndebug = true ;" ) ;
+expect( spp.preprocess( aliases + "//#debug>=warning:debug = true ;" , { debug: '0' } ) ).to.be( "\n\n\n\n//debug = true ;" ) ;
+expect( spp.preprocess( aliases + "//#debug>=warning:debug = true ;" , { debug: '1' } ) ).to.be( "\n\n\n\ndebug = true ;" ) ;
+expect( spp.preprocess( aliases + "//#debug>=warning:debug = true ;" , { debug: '2' } ) ).to.be( "\n\n\n\ndebug = true ;" ) ;
+expect( spp.preprocess( aliases + "//#debug>=warning:debug = true ;" , { debug: '3' } ) ).to.be( "\n\n\n\ndebug = true ;" ) ;
+```
+
+<a name="assignment"></a>
+# Assignment
+Simple assignment.
+
+```js
+expect( spp.preprocess( "//#debug -> myVar" , {} ) ).to.be( "" ) ;
+expect( spp.preprocess( "//#debug -> myVar" , { debug: true } ) ).to.be( "myVar = true ;" ) ;
+expect( spp.preprocess( "//#debug -> myVar" , { debug: 'trace' } ) ).to.be( "myVar = 'trace' ;" ) ;
+expect( spp.preprocess( "//#debug -> myVar" , { debug: '42' } ) ).to.be( "myVar = 42 ;" ) ;
+expect( spp.preprocess( "//#debug -> myVar" , { debug: 42 } ) ).to.be( "myVar = 42 ;" ) ;
+expect( spp.preprocess( "//#debug -> myVar" , { debug: '0' } ) ).to.be( "myVar = 0 ;" ) ;
+expect( spp.preprocess( "//#debug -> myVar" , { debug: 0 } ) ).to.be( "myVar = 0 ;" ) ;
+
+expect( spp.preprocess( "//#debug -> obj.child.prop" , { debug: 'trace' } ) ).to.be( "obj.child.prop = 'trace' ;" ) ;
+expect( spp.preprocess( "//#debug -> arr[4]" , { debug: 'trace' } ) ).to.be( "arr[4] = 'trace' ;" ) ;
+```
+
+Conditional assignment.
+
+```js
+expect( spp.preprocess( "//#debug = trace -> myVar" , { debug: 'trace' } ) ).to.be( "myVar = 'trace' ;" ) ;
+expect( spp.preprocess( "//#debug = trace -> myVar" , { debug: 'error' } ) ).to.be( "" ) ;
+expect( spp.preprocess( "//#debug > 1 -> myVar" , { debug: '2' } ) ).to.be( "myVar = 2 ;" ) ;
+expect( spp.preprocess( "//#debug > 3 -> myVar" , { debug: '2' } ) ).to.be( "" ) ;
 ```
 

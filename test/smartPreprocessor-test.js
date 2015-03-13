@@ -423,6 +423,8 @@ describe( "Comment/uncomment" , function() {
 		expect( spp.preprocess( "//#debug:debug = true ;" , { debug: '0' } ) ).to.be( "debug = true ;" ) ;
 		expect( spp.preprocess( "//#debug:debug = true ;" , { debug: 0 } ) ).to.be( "debug = true ;" ) ;
 	} ) ;
+	
+	it( "<,<=,>,>= operators" ) ;
 } ) ;
 
 
@@ -431,18 +433,53 @@ describe( "Aliases" , function() {
 	
 	it( "Numeric aliases" , function() {
 		var aliases =
-			"//# debug # error -> 0\n" +
-			"//# debug # warning -> 1\n" +
-			"//# debug # verbose -> 2\n" +
-			"//# debug # trace -> 3\n" ;
+			"//# debug # error ~ 0\n" +
+			"//# debug # warning ~ 1\n" +
+			"//# debug # verbose ~ 2\n" +
+			"//# debug # trace ~ 3\n" ;
 		
-		/*
-		expect( spp.preprocess( aliases + "//#debug=error:debug = true ;" , { debug: true } ) ).to.be( "//debug = true ;" ) ;
-		expect( spp.preprocess( aliases + "//#debug=error:debug = true ;" , { debug: 'error' } ) ).to.be( "debug = true ;" ) ;
-		expect( spp.preprocess( aliases + "//#debug=error:debug = true ;" , { debug: 'verbose' } ) ).to.be( "//debug = true ;" ) ;
-		*/
-		expect( spp.preprocess( aliases + "//#debug=error:debug = true ;" , { debug: 0 } ) ).to.be( "debug = true ;" ) ;
-		expect( spp.preprocess( aliases + "//#debug=error:debug = true ;" , { debug: '0' } ) ).to.be( "debug = true ;" ) ;
+		expect( spp.preprocess( aliases + "//#debug=error:debug = true ;" , { debug: true } ) ).to.be( "\n\n\n\n//debug = true ;" ) ;
+		expect( spp.preprocess( aliases + "//#debug=error:debug = true ;" , { debug: 'error' } ) ).to.be( "\n\n\n\ndebug = true ;" ) ;
+		expect( spp.preprocess( aliases + "//#debug=error:debug = true ;" , { debug: 'verbose' } ) ).to.be( "\n\n\n\n//debug = true ;" ) ;
+		expect( spp.preprocess( aliases + "//#debug=error:debug = true ;" , { debug: 0 } ) ).to.be( "\n\n\n\ndebug = true ;" ) ;
+		expect( spp.preprocess( aliases + "//#debug=error:debug = true ;" , { debug: '0' } ) ).to.be( "\n\n\n\ndebug = true ;" ) ;
+		
+		expect( spp.preprocess( aliases + "//#debug>=warning:debug = true ;" , { debug: 'error' } ) ).to.be( "\n\n\n\n//debug = true ;" ) ;
+		expect( spp.preprocess( aliases + "//#debug>=warning:debug = true ;" , { debug: 'warning' } ) ).to.be( "\n\n\n\ndebug = true ;" ) ;
+		expect( spp.preprocess( aliases + "//#debug>=warning:debug = true ;" , { debug: 'verbose' } ) ).to.be( "\n\n\n\ndebug = true ;" ) ;
+		expect( spp.preprocess( aliases + "//#debug>=warning:debug = true ;" , { debug: 'trace' } ) ).to.be( "\n\n\n\ndebug = true ;" ) ;
+		expect( spp.preprocess( aliases + "//#debug>=warning:debug = true ;" , { debug: '0' } ) ).to.be( "\n\n\n\n//debug = true ;" ) ;
+		expect( spp.preprocess( aliases + "//#debug>=warning:debug = true ;" , { debug: '1' } ) ).to.be( "\n\n\n\ndebug = true ;" ) ;
+		expect( spp.preprocess( aliases + "//#debug>=warning:debug = true ;" , { debug: '2' } ) ).to.be( "\n\n\n\ndebug = true ;" ) ;
+		expect( spp.preprocess( aliases + "//#debug>=warning:debug = true ;" , { debug: '3' } ) ).to.be( "\n\n\n\ndebug = true ;" ) ;
+	} ) ;
+	
+} ) ;
+
+
+
+describe( "Assignment" , function() {
+	
+	it( "Simple assignment" , function() {
+		
+		expect( spp.preprocess( "//#debug -> myVar" , {} ) ).to.be( "" ) ;
+		expect( spp.preprocess( "//#debug -> myVar" , { debug: true } ) ).to.be( "myVar = true ;" ) ;
+		expect( spp.preprocess( "//#debug -> myVar" , { debug: 'trace' } ) ).to.be( "myVar = 'trace' ;" ) ;
+		expect( spp.preprocess( "//#debug -> myVar" , { debug: '42' } ) ).to.be( "myVar = 42 ;" ) ;
+		expect( spp.preprocess( "//#debug -> myVar" , { debug: 42 } ) ).to.be( "myVar = 42 ;" ) ;
+		expect( spp.preprocess( "//#debug -> myVar" , { debug: '0' } ) ).to.be( "myVar = 0 ;" ) ;
+		expect( spp.preprocess( "//#debug -> myVar" , { debug: 0 } ) ).to.be( "myVar = 0 ;" ) ;
+		
+		expect( spp.preprocess( "//#debug -> obj.child.prop" , { debug: 'trace' } ) ).to.be( "obj.child.prop = 'trace' ;" ) ;
+		expect( spp.preprocess( "//#debug -> arr[4]" , { debug: 'trace' } ) ).to.be( "arr[4] = 'trace' ;" ) ;
+	} ) ;
+	
+	it( "Conditional assignment" , function() {
+		
+		expect( spp.preprocess( "//#debug = trace -> myVar" , { debug: 'trace' } ) ).to.be( "myVar = 'trace' ;" ) ;
+		expect( spp.preprocess( "//#debug = trace -> myVar" , { debug: 'error' } ) ).to.be( "" ) ;
+		expect( spp.preprocess( "//#debug > 1 -> myVar" , { debug: '2' } ) ).to.be( "myVar = 2 ;" ) ;
+		expect( spp.preprocess( "//#debug > 3 -> myVar" , { debug: '2' } ) ).to.be( "" ) ;
 	} ) ;
 	
 } ) ;
