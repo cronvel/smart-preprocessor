@@ -36,7 +36,7 @@ Simple line comment behaviour.
 ```js
 var code =
 	"var debug = false ;\n" +
-	"debug = true ; //#! production\n" +
+	"debug = true ; //#production!\n" +
 	"console.log( debug ) ;\n" ;
 
 expect( spp.preprocess( code , {} ) ).to.be( 
@@ -74,14 +74,14 @@ expect( spp.preprocess( " \t //# \t debug \t : \t debug = true ;" , { debug: tru
 Comment the line with various spacing behaviour.
 
 ```js
-expect( spp.preprocess( "debug = true ;//#!production" ) ).to.be( "debug = true ;" ) ;
-expect( spp.preprocess( "debug = true ;//#!production" , { production: true } ) ).to.be( "//debug = true ;" ) ;
+expect( spp.preprocess( "debug = true ;//#production!" ) ).to.be( "debug = true ;" ) ;
+expect( spp.preprocess( "debug = true ;//#production!" , { production: true } ) ).to.be( "//debug = true ;" ) ;
 
-expect( spp.preprocess( "debug = true ; \t //# \t ! \t production \t " ) ).to.be( "debug = true ;" ) ;
-expect( spp.preprocess( "debug = true ; \t //# \t ! \t production \t " , { production: true } ) ).to.be( "//debug = true ;" ) ;
+expect( spp.preprocess( "debug = true ; \t //# \t production \t ! \t " ) ).to.be( "debug = true ;" ) ;
+expect( spp.preprocess( "debug = true ; \t //# \t production \t ! \t " , { production: true } ) ).to.be( "//debug = true ;" ) ;
 
-expect( spp.preprocess( " \t debug = true ; \t //# \t ! \t production \t " ) ).to.be( " \t debug = true ;" ) ;
-expect( spp.preprocess( " \t debug = true ; \t //# \t ! \t production \t " , { production: true } ) ).to.be( " \t //debug = true ;" ) ;
+expect( spp.preprocess( " \t debug = true ; \t //# \t production \t ! \t " ) ).to.be( " \t debug = true ;" ) ;
+expect( spp.preprocess( " \t debug = true ; \t //# \t production \t ! \t " , { production: true } ) ).to.be( " \t //debug = true ;" ) ;
 ```
 
 Simple block uncomment behaviour.
@@ -124,7 +124,7 @@ Simple block comment behaviour.
 ```js
 var code =
 	"var debug = false ;\n" +
-	"//*#! production\n" +
+	"//*# production !\n" +
 	"debug = true ;\n" +
 	"//*/\n" +
 	"console.log( debug ) ;\n" ;
@@ -198,7 +198,7 @@ Line comment behaviour with string comparison.
 ```js
 var code =
 	"fn1() ;\n" +
-	"console.log( '[VERBOSE] Loading...' ) ; //#!debug=error\n" +
+	"console.log( '[VERBOSE] Loading...' ) ; //# debug=error !\n" +
 	"fn2() ;\n" ;
 
 expect( spp.preprocess( code , {} ) ).to.be( 
@@ -288,7 +288,7 @@ Block comment behaviour with string comparison.
 ```js
 var code =
 	"fn1() ;\n" +
-	"//*#!debug=error\n" +
+	"//*# debug=error !\n" +
 	"console.log( '[TRACE] Current state: ' , state ) ;\n" +
 	"//*/\n" +
 	"fn2() ;\n" ;
