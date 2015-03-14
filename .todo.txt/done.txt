@@ -1,0 +1,1 @@
+x 2015-03-14 All regexp eat too much chars, only 50% of line are computed in case of block of preprocessor command @bug
