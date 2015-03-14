@@ -1,6 +1,6 @@
 {
   "name": "smart-preprocessor",
-  "version": "0.0.6",
+  "version": "0.0.7",
   "description": "A smart preprocessor for Node.",
   "main": "lib/smartPreprocessor.js",
   "directories": {
@@ -9,7 +9,7 @@
   "bin": {
     "smart-preprocessor": "./bin/smart-preprocessor"
   },
-    "dependencies": {
+  "dependencies": {
     "glob": "^4.0.5",
     "minimist": "^1.1.0",
     "hash-kit": "0.0.4",
