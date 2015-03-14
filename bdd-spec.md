@@ -1,11 +1,15 @@
 # TOC
-   - [Comment/uncomment](#commentuncomment)
-   - [Aliases](#aliases)
-   - [Assignment](#assignment)
+   - [Preprocessor](#preprocessor)
+     - [Comment/uncomment](#preprocessor-commentuncomment)
+     - [Aliases](#preprocessor-aliases)
+     - [Assignment](#preprocessor-assignment)
+   - [Require](#require)
 <a name=""></a>
  
-<a name="commentuncomment"></a>
-# Comment/uncomment
+<a name="preprocessor"></a>
+# Preprocessor
+<a name="preprocessor-commentuncomment"></a>
+## Comment/uncomment
 Simple line uncomment behaviour.
 
 ```js
@@ -402,8 +406,8 @@ expect( spp.preprocess( "//#debug:debug = true ;" , { debug: '0' } ) ).to.be( "d
 expect( spp.preprocess( "//#debug:debug = true ;" , { debug: 0 } ) ).to.be( "debug = true ;" ) ;
 ```
 
-<a name="aliases"></a>
-# Aliases
+<a name="preprocessor-aliases"></a>
+## Aliases
 Numeric aliases.
 
 ```js
@@ -429,8 +433,8 @@ expect( spp.preprocess( aliases + "//#debug>=warning:debug = true ;" , { debug: 
 expect( spp.preprocess( aliases + "//#debug>=warning:debug = true ;" , { debug: '3' } ) ).to.be( "\n\n\n\ndebug = true ;" ) ;
 ```
 
-<a name="assignment"></a>
-# Assignment
+<a name="preprocessor-assignment"></a>
+## Assignment
 Simple assignment.
 
 ```js
@@ -453,5 +457,51 @@ expect( spp.preprocess( "//#debug = trace -> myVar" , { debug: 'trace' } ) ).to.
 expect( spp.preprocess( "//#debug = trace -> myVar" , { debug: 'error' } ) ).to.be( "" ) ;
 expect( spp.preprocess( "//#debug > 1 -> myVar" , { debug: '2' } ) ).to.be( "myVar = 2 ;" ) ;
 expect( spp.preprocess( "//#debug > 3 -> myVar" , { debug: '2' } ) ).to.be( "" ) ;
+```
+
+<a name="require"></a>
+# Require
+Should preprocess and require multiple instances of the same module.
+
+```js
+var catched , mod ;
+
+
+catched = false ;
+
+try {
+	// It MUST fail
+	mod = spp.require( './codeSample/module1.js' ) ;
+}
+catch ( error ) {
+	//console.log( error ) ;
+	catched = true ;
+}
+
+expect( catched ).to.be.ok() ;
+
+mod = spp.require( __dirname + '/codeSample/module1.js' , {} , { multi: true } ) ;
+expect( mod.fixedText() ).to.be( 'original' ) ;
+expect( mod.value() ).to.be( undefined ) ;
+
+mod = spp.require( __dirname + '/codeSample/module1.js' , { modified: true } , { multi: true } ) ;
+expect( mod.fixedText() ).to.be( 'modified' ) ;
+expect( mod.value() ).to.be( undefined ) ;
+
+mod = spp.require( __dirname + '/codeSample/module1.js' , { param: 'toto' } , { multi: true } ) ;
+expect( mod.fixedText() ).to.be( 'original' ) ;
+expect( mod.value() ).to.be( 'toto' ) ;
+
+mod = spp.require( __dirname + '/codeSample/module1.js' , { param: true } , { multi: true } ) ;
+expect( mod.fixedText() ).to.be( 'original' ) ;
+expect( mod.value() ).to.be( true ) ;
+
+mod = spp.require( __dirname + '/codeSample/module1.js' , { param: 42 } , { multi: true } ) ;
+expect( mod.fixedText() ).to.be( 'original' ) ;
+expect( mod.value() ).to.be( 42 ) ;
+
+mod = spp.require( __dirname + '/codeSample/module1.js' , { param: "42" } , { multi: true } ) ;
+expect( mod.fixedText() ).to.be( 'original' ) ;
+expect( mod.value() ).to.be( 42 ) ;
 ```
 
