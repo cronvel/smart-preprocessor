@@ -1,6 +1,21 @@
 
-module.exports = function()
+
+var mod = {} ;
+module.exports = mod ;
+
+
+
+mod.fixedText = function()
 {
-	//# debug : return 'debug' ;
-	return 'original' ;	//# debug !
+	//# modified : return 'modified' ;
+	return 'original' ;	//# modified !
+} ;
+
+
+
+mod.value = function()
+{
+	var value ;
+	//# param -> value
+	return value ;
 } ;

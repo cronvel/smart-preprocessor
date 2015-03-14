@@ -6,7 +6,12 @@
   "directories": {
     "test": "test"
   },
-  "dependencies": {
+  "bin": {
+    "smart-preprocessor": "./bin/smart-preprocessor"
+  },
+    "dependencies": {
+    "glob": "^4.0.5",
+    "minimist": "^1.1.0",
     "hash-kit": "0.0.4",
     "tree-kit": "^0.4.1"
   },

@@ -492,7 +492,7 @@ describe( "Preprocessor" , function() {
 
 describe( "Require" , function() {
 	
-	it( "..." , function() {
+	it( "Should preprocess and require multiple instances of the same module" , function() {
 		
 		var catched , mod ;
 		
@@ -510,11 +510,29 @@ describe( "Require" , function() {
 		
 		expect( catched ).to.be.ok() ;
 		
-		mod = spp.require( __dirname + '/codeSample/module1.js' , {} , { multipleInstance: true } ) ;
-		expect( mod() ).to.be( 'original' ) ;
+		mod = spp.require( __dirname + '/codeSample/module1.js' , {} , { multi: true } ) ;
+		expect( mod.fixedText() ).to.be( 'original' ) ;
+		expect( mod.value() ).to.be( undefined ) ;
 		
-		mod = spp.require( __dirname + '/codeSample/module1.js' , { debug: true } , { multipleInstance: true } ) ;
-		expect( mod() ).to.be( 'debug' ) ;
+		mod = spp.require( __dirname + '/codeSample/module1.js' , { modified: true } , { multi: true } ) ;
+		expect( mod.fixedText() ).to.be( 'modified' ) ;
+		expect( mod.value() ).to.be( undefined ) ;
+		
+		mod = spp.require( __dirname + '/codeSample/module1.js' , { param: 'toto' } , { multi: true } ) ;
+		expect( mod.fixedText() ).to.be( 'original' ) ;
+		expect( mod.value() ).to.be( 'toto' ) ;
+		
+		mod = spp.require( __dirname + '/codeSample/module1.js' , { param: true } , { multi: true } ) ;
+		expect( mod.fixedText() ).to.be( 'original' ) ;
+		expect( mod.value() ).to.be( true ) ;
+		
+		mod = spp.require( __dirname + '/codeSample/module1.js' , { param: 42 } , { multi: true } ) ;
+		expect( mod.fixedText() ).to.be( 'original' ) ;
+		expect( mod.value() ).to.be( 42 ) ;
+		
+		mod = spp.require( __dirname + '/codeSample/module1.js' , { param: "42" } , { multi: true } ) ;
+		expect( mod.fixedText() ).to.be( 'original' ) ;
+		expect( mod.value() ).to.be( 42 ) ;
 	} ) ;
 	
 } ) ;
