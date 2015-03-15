@@ -535,7 +535,10 @@ describe( "Require" , function() {
 		expect( mod.value() ).to.be( 42 ) ;
 	} ) ;
 	
+	it( "Test the cache of .require()" ) ;
 } ) ;
+
+
 
 
 
