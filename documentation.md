@@ -15,7 +15,7 @@ Smart Preprocessor allows you to preprocess a Javascript module, to build modifi
 
 While it is inspired by the C/C++ preprocessor, the syntax is different in order to be in phase with the Javascript's spirit.
 
-Its syntax is hidden behind comment, so the original source file is
+Its syntax is hidden behind the comment mark, so the original source file is
 <a href="#recommandations">perfectly operationnal without any pre-processing</a>.
 
 
@@ -42,11 +42,13 @@ After installing it globally, using `npm install -g smart-preprocessor`, we can 
 
 The syntax is simple:
 
-`smart-preprocessor <source-file> [dest-file] [--parameter1 value1] [--parameter2 value2] [...]`.
+`smart-preprocessor <source-file> [dest-file] [--switch1 value1] [--switch2 value2] [...]`.
 
 If *dest* is not passed, the standard output will be assumed. It's useful if we have to pipe to another program.
 
-All the *parameters* are identifiers we have used in our source-file. See below.
+All the *switch* are identifiers we have used in our source-file. See below.
+Any alpha-numric string can be used as a switch.
+Just try to be consistent with other projects.
 
 Some examples:
 
@@ -62,17 +64,16 @@ Smart Preprocessor can *require* a module while pre-processing it on-the-fly.
 
 
 
-### .require( module , preprocessorContants , [ options ] )
+### .require( module , switchs , [ options ] )
 
 * module: `string` the module to load
-* preprocessorContants: `object` an object containing the preprocessor constants
+* switchs: `object` an object containing the preprocessor switchs
 * options: `object` *optional*, contains some options where:
-	* multi: if the module is required multiple times with differents *preprocessorContants* object, multiple
-		instances of the module will be spawned. Without this options, subsequent require will use the first
-		instance even if the *preprocessorConstants* are different. Some node.js module execute code at require-time,
-		that's why the default behaviour is to share only one instance, like normal *require()* does.
-
-
+	* multi: if the module is required multiple times with different *switchs* objects, multiple
+		instances of the module will be spawned. Without this options, subsequent *require* will use the first
+		instance even if the *switchs* object are different. Some node.js module execute code
+		at require-time, that's why the default behaviour is to share only one instance, just like a normal
+		*require()* does.
 
 ```js
 var spp = require( 'smart-preprocessor' ) ;	// Load the smart preprocessor module
@@ -82,6 +83,7 @@ var myModule = spp.require( 'my-module' , { config1: true , config2: 4 } ) ;
 
 When loading a module not lying in a `node_modules` directory, you must provide the full path of the file, 
 one may simply prepend `__dirname` to the path's string.
+
 
 
 <a name="recommandations"></a>
@@ -95,31 +97,254 @@ one may simply prepend `__dirname` to the path's string.
   By the way, since preprocessor's *.require()* should read your code, write it somewhere and then call the core
   node.js *require()*, it is slower than normal *require()*. Once your module is cached, it still has to compute a hash
   to find out the path of the preprocessed file.
-* As you can see, you cannot define a preprocessor constant to false, null or undefined. There is nothing close to 
-  an *else* statement either. Why? Because invoking Smart Preprocessor without any constant **\*MUST\*** be equivalent
-  to the original unprocessed code.
+* As you can see, you cannot define a preprocessor switch to false, null, undefined or an empty string.
+  There is nothing close to an *else* statement either. Why? Because invoking Smart Preprocessor without any switch
+  **\*MUST\*** be equivalent to the original unprocessed code.
 
 
 
-## Conditional comment syntax
+## Preprocessor Commands
 
-### `//# <condition> : <inline-code>`
+The Javascript source file should contains some preprocessor command.
+All preprocessor command are hidden into comments.
 
-If *condition* is true, then the code is uncommented.
+In fact, many command works by commenting or uncommenting lines.
 
-Example, source code:
+
+
+### Conditional comment syntax
+
+#### `//# <expression> : <inline-code>`
+
+If *expression* is truthy, then the code is uncommented.
+
+Example, source code of *hello.js*:
+```js
+console.log( 'Hello' ) ;
+//# debug : console.log( myVar ) ;
+console.log( 'world!' ) ;
 ```
+
+After running in a shell the command `smart-preprocessor hello.js hello.pproc.js --debug`, you get a *hello.pproc.js*
+file with this content:
+
+```js
+console.log( 'Hello' ) ;
+console.log( myVar ) ;
+console.log( 'world!' ) ;
+```
+
+If you had typed `smart-preprocessor hello.js hello.pproc.js --whatever`, *hello.pproc.js* would be:
+
+```js
+console.log( 'Hello' ) ;
+//console.log( myVar ) ;
+console.log( 'world!' ) ;
+```
+
+... note that the preprocessor command had been removed entirely.
+
+
+
+#### `<inline-code> //# <expression> !`
+
+If *expression* is truthy, then the code is commented.
+
+Example, source code of *hello.js*:
+```js
+console.log( 'Hello' ) ;
+console.log( myVar ) ;	//# quiet !
+console.log( 'world!' ) ;
+```
+
+After running in a shell the command `smart-preprocessor hello.js hello.pproc.js --quiet`, you get a *hello.pproc.js*
+file with this content:
+
+```js
+console.log( 'Hello' ) ;
+//console.log( myVar ) ;
+console.log( 'world!' ) ;
+```
+
+If you had typed `smart-preprocessor hello.js hello.pproc.js --whatever`, *hello.pproc.js* would be:
+
+```js
+console.log( 'Hello' ) ;
+console.log( myVar ) ;
+console.log( 'world!' ) ;
 ```
 
 
 
-### `<code> //# <condition> !` if <condition> is set, the code is commented.
+#### `/*# <expression> :\n <multiline-code> \n//*/`
+
+If <expression> is set, the code is uncommented.
+
+Example, source code of *hello.js*:
+```js
+console.log( 'Hello' ) ;
+/*# debug :
+console.log( myVar1 ) ;
+console.log( myVar2 ) ;
+//*/
+console.log( 'world!' ) ;
+```
+
+After running in a shell the command `smart-preprocessor hello.js hello.pproc.js --debug`, you get a *hello.pproc.js*
+file with this content:
+
+```js
+console.log( 'Hello' ) ;
+//*
+console.log( myVar1 ) ;
+console.log( myVar2 ) ;
+//*/
+console.log( 'world!' ) ;
+```
+
+If you had typed `smart-preprocessor hello.js hello.pproc.js --whatever`, *hello.pproc.js* would be:
+
+```js
+console.log( 'Hello' ) ;
+/*
+console.log( myVar1 ) ;
+console.log( myVar2 ) ;
+//*/
+console.log( 'world!' ) ;
+```
 
 
 
-### `/*# <condition> :\n <multiline-code> \n//*/` if <condition> is set, the code is uncommented.
+#### `//*# <expression> :\n <multiline-code> \n//*/`
+
+If *expression* is truthy, the code is commented.
+
+Example, source code of *hello.js*:
+```js
+console.log( 'Hello' ) ;
+//*# quiet !
+console.log( myVar1 ) ;
+console.log( myVar2 ) ;
+//*/
+console.log( 'world!' ) ;
+```
+
+After running in a shell the command `smart-preprocessor hello.js hello.pproc.js --quiet`, you get a *hello.pproc.js*
+file with this content:
+
+```js
+console.log( 'Hello' ) ;
+/*
+console.log( myVar1 ) ;
+console.log( myVar2 ) ;
+//*/
+console.log( 'world!' ) ;
+```
+
+If you had typed `smart-preprocessor hello.js hello.pproc.js --whatever`, *hello.pproc.js* would be:
+
+```js
+console.log( 'Hello' ) ;
+//*
+console.log( myVar1 ) ;
+console.log( myVar2 ) ;
+//*/
+console.log( 'world!' ) ;
+```
 
 
 
-### `//*# <condition> :\n <multiline-code> \n//*/` if <condition> is set, the code is commented.
+### Expressions
+
+In previous examples, we have only used the presence or absence of a switch.
+However it is possible to compare a switch to a value.
+
+A value is typically a string.
+However, any string that can be parsed as a float will be converted to a *number*.
+The same rule apply for the switch itself.
+
+This is the list of all type comparison.
+
+
+
+#### `<switch>`
+
+This is the simplest check.
+If the switch is defined, the condition is true.
+
+**Please be extremely careful: unlike Javascript, even if a switch's value is 0, the condition will still be true**.
+**This expression does not check if the switch is truthy or falsy, it checks if it exists.**
+Also there are <a href="#recommandations">strong rationals behind this design</a>.
+
+Example:
+
+```js
+//# debug : console.log( myVar ) ;
+```
+
+
+
+#### `<switch> = <value>`
+
+This expression is true if the switch exists and if it equals *value*.
+
+Example:
+
+```js
+//# loglevel = trace : console.log( myVar ) ;
+```
+
+If a switch *loglevel* exists and is set to "trace", then the code is uncommented.
+
+
+
+#### `<switch> > <value>`, `<switch> >= <value>`, `<switch> < <value>`, `<switch> <= <value>`
+
+This expression is true if the switch exists, if both the switch and the value are numbers, and if the switch is
+respectively greater, greater or equals, lesser, lesser or equals than the value.
+
+Example:
+
+```js
+//# loglevel >= 3 : console.log( myVar ) ;
+```
+
+If a switch *loglevel* exists, is a number and is greater than or equals to 3, then the code is uncommented.
+
+
+
+### Aliases
+
+It is possible to define aliases.
+Each alias is bound to a particular switch.
+
+When an expression involve a switch that has aliases, the preprocessor will try to perform alias substitution on 
+both the switch's value and the value against whom the switch is compared.
+
+The syntax of alias definition is `//# <switch> # <alias> ~ <value>`.
+
+Example:
+
+```js
+//# loglevel # error ~ 0
+//# loglevel # warning ~ 1
+//# loglevel # verbose ~ 2
+//# loglevel # trace ~ 3
+
+//# loglevel >= warning : console.log( "Warning: something bad happens!" ) ;
+```
+
+We defined aliases for the *loglevel* switch.
+If this switch value is one of *error, warning, verbose* or *trace*, it will be replaced respectively by 0, 1, 2 or 3.
+Then we have a conditional syntax, comparing against *warning*... *warning* is replaced by *1* beforehand.
+Therefore, if the *loglevel* switch is *warning*, *verbose*, *trace* or any number greater than or equals to 3,
+the code will be uncommented.
+
+
+
+### Assigment
+
+................................... TODO!!! ....................
+
+
 
