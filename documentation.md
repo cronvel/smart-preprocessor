@@ -16,16 +16,16 @@ or even load a modified version of the module at run-time (*require()*).
 While it is inspired by the C/C++ preprocessor, the syntax is different to be more in phase with the Javascript's spirit.
 
 Its syntax is hidden behind the comment mark, so the original source file is
-[perfectly operationnal without any pre-processing](#recommandations)
+[perfectly operational without any pre-processing](#recommandations)
 
 
 
-###### Common use cases: 
+##### Common use cases: 
 
 * you want a lot of logs in development mode, but you don't even want that the production code had to filter them out
-  with dozens of *if* statement.
+  with dozens of *if* statements.
 
-* your source code use specific feature of an engine, namely *io.js*, but you have specified an alternative code
+* your source code uses specific features of an engine, namely *io.js*, but you have specified an alternative code
   that is compatible with *node.js*.
 
 * you have some server code that works fine, you want to build a browser-compatible version
@@ -42,7 +42,7 @@ After installing it globally, using `npm install -g smart-preprocessor`, we can 
 
 The syntax is simple:
 
-`smart-preprocessor <source-file> [dest-file] [--switch1 value1] [--switch2 value2] [...]`.
+`smart-preprocessor <source-file> [dest-file] [--switch1 [value1]] [--switch2 [value2]] [...]`.
 
 If *dest* is not passed, the standard output will be assumed. It's useful if we have to pipe to another program.
 
