@@ -30,6 +30,7 @@
 
 
 var spp = require( '../lib/smartPreprocessor.js' ) ;
+var string = require( 'string-kit' ) ;
 var fs = require( 'fs' ) ;
 
 var expect = require( 'expect.js' ) ;
@@ -426,7 +427,56 @@ describe( "Preprocessor" , function() {
 			expect( spp.preprocess( "//#debug:debug = true ;" , { debug: 0 } ) ).to.be( "debug = true ;" ) ;
 		} ) ;
 		
-		it( "<,<=,>,>= operators" ) ;
+		it( "Behaviour of the <,<=,>,>= comparison operators" , function() {
+			
+			var fcode =
+				"fn1() ;\n" +
+				"//# debug %s %s : console.log( '[TRACE] Current state: ' , state ) ;\n" +
+				"fn2() ;\n" ;
+			
+			var commentExpected =
+				"fn1() ;\n" +
+				"//console.log( '[TRACE] Current state: ' , state ) ;\n" +
+				"fn2() ;\n" ;
+			
+			var uncommentExpected =
+				"fn1() ;\n" +
+				"console.log( '[TRACE] Current state: ' , state ) ;\n" +
+				"fn2() ;\n" ;
+			
+			var check = function( fcode , op , rightValue , switchs , expected ) {
+				
+				var code = string.format( fcode , op , rightValue ) ;
+				
+				expect( spp.preprocess( code , switchs ) ).to.be( expected ) ;
+			} ;
+			
+			check( fcode , '<' , 3 , { debug: 1 } , uncommentExpected ) ;
+			check( fcode , '<=' , 3 , { debug: 1 } , uncommentExpected ) ;
+			check( fcode , '>' , 3 , { debug: 1 } , commentExpected ) ;
+			check( fcode , '>=' , 3 , { debug: 1 } , commentExpected ) ;
+			
+			check( fcode , '<' , 3 , { debug: 3 } , commentExpected ) ;
+			check( fcode , '<=' , 3 , { debug: 3 } , uncommentExpected ) ;
+			check( fcode , '>' , 3 , { debug: 3 } , commentExpected ) ;
+			check( fcode , '>=' , 3 , { debug: 3 } , uncommentExpected ) ;
+			
+			check( fcode , '<' , 3 , { debug: 5 } , commentExpected ) ;
+			check( fcode , '<=' , 3 , { debug: 5 } , commentExpected ) ;
+			check( fcode , '>' , 3 , { debug: 5 } , uncommentExpected ) ;
+			check( fcode , '>=' , 3 , { debug: 5 } , uncommentExpected ) ;
+			
+			check( fcode , '<' , 3 , { debug: 'blah' } , commentExpected ) ;
+			check( fcode , '<=' , 3 , { debug: 'blah' } , commentExpected ) ;
+			check( fcode , '>' , 3 , { debug: 'blah' } , commentExpected ) ;
+			check( fcode , '>=' , 3 , { debug: 'blah' } , commentExpected ) ;
+			
+			check( fcode , '<' , 3 , {} , commentExpected ) ;
+			check( fcode , '<=' , 3 , {} , commentExpected ) ;
+			check( fcode , '>' , 3 , {} , commentExpected ) ;
+			check( fcode , '>=' , 3 , {} , commentExpected ) ;
+			
+		} ) ;
 	} ) ;
 	
 	

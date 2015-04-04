@@ -103,12 +103,21 @@ one may simply prepend `__dirname` to the path's string.
 
 
 
-## Preprocessor Commands
+## Preprocessor Commands Syntax
 
 The Javascript source file should contains some preprocessor command.
 All preprocessor command are hidden into comments.
 
 In fact, many command works by commenting or uncommenting lines.
+
+A preprocessor command start with a *preprocessor mark*.
+
+A *preprocessor mark* is a *comment mark* followed by a *#*.
+
+For inline command, this will start by `//#` without spaces.
+
+For multi-line command, this will start with either `/*#` or `//*#`, see below the differences.
+Multi-line command stop at `//*/`.
 
 
 
@@ -399,7 +408,7 @@ Also you can set up the value to anything, like (assuming the *loglevel* switch 
 
 
 Finally, it is possible to write conditional assignment.
-The syntax is simply a mix of the conditional syntax and the assignment syntax.
+This is simply a mix of the *conditional syntax* and the *assignment syntax*.
 
 For example:
 
@@ -407,6 +416,40 @@ For example:
 //# loglevel = trace -> myVar
 ```
 
-... will only assign the *loglevel* switch to *myVar* only if loglevel === trace.
+... will assign the *loglevel* switch to *myVar* only if loglevel === trace.
+
+Another example:
+
+```js
+//# loglevel >= 3 -> myVar
+```
+
+... will assign the *loglevel* switch to *myVar* only if loglevel is a number and is greater than or equals to 3.
+
+
+
+### Spacing
+
+Spaces are optional.
+
+This code:
+```js
+//#debug:console.log('Warning!');
+```
+... is strictly equivalent to this code:
+```js
+//# debug : console.log( 'Warning!' ) ;
+```
+
+**However spaces between the comment mark ('//' or '/*') and the '#' are \*NOT\* allowed!**
+
+This is called *the preprocessor mark*.
+
+Therefore, the current code has no effect:
+```js
+// # debug : console.log( 'Warning!' ) ;
+```
+... it will be considered like a normal comment.
+
 
 
