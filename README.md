@@ -10,27 +10,27 @@ A smart preprocessor for Node.js.
 
 
 
-Smart Preprocessor allows you to preprocess a Javascript module, to build modified versions or even load at run-time 
-(*require()*) a modified version of the code.
+Smart Preprocessor allows you to preprocess a Javascript module, to build modified versions of the module,
+or even load a modified version of the module at run-time (*require()*).
 
-While it is inspired by the C/C++ preprocessor, the syntax is different in order to be in phase with the Javascript's spirit.
+While it is inspired by the C/C++ preprocessor, the syntax is different to be more in phase with the Javascript's spirit.
 
 Its syntax is hidden behind the comment mark, so the original source file is
-[perfectly operationnal without any pre-processing](#recommandations)
+[perfectly operational without any pre-processing](#recommendations)
 
 
 
-Common use cases: 
+##### Common use cases: 
 
-* you want a lot of logs in development mode, but you don't even want that the production code had to filter out
-  them with dozens of *if* statement.
+* you want a lot of logs in development mode, but you don't even want that the production code had to filter them out
+  with dozens of *if* statements.
 
-* your source code use specific feature of an engine, namely *io.js*, but you have specified an alternative code
+* your source code uses specific features of an engine, namely *io.js*, but you have specified an alternative code
   that is compatible with *node.js*.
 
 * you have some server code that works fine, you want to build a browser-compatible version
 
-Be sure to check the [recommandations](#recommandations).
+Be sure to check the [recommendations](#recommendations).
 
 
 
@@ -42,18 +42,19 @@ After installing it globally, using `npm install -g smart-preprocessor`, we can 
 
 The syntax is simple:
 
-`smart-preprocessor <source-file> [dest-file] [--switch1 value1] [--switch2 value2] [...]`.
+`smart-preprocessor <source-file> [dest-file] [--switch1 [value1]] [--switch2 [value2]] [...]`.
 
-If *dest* is not passed, the standard output will be assumed. It's useful if we have to pipe to another program.
+If *dest* is not given, the standard output will be assumed. It's useful if we have to pipe that into another program.
 
-All the *switch* are identifiers we have used in our source-file. See below.
-Any alpha-numric string can be used as a switch.
+All *switches* are identifiers we have used in our source-file. See below.
+
+Any alpha-numric string can be used as a *switch*.
 Just try to be consistent with other projects.
 
 Some examples:
 
-* `smart-preprocessor main.js main.debug.js --debug`: build the main.debug.js file from main.js, using the *debug* parameter
-* `smart-preprocessor main.js main.trace.js --loglevel trace`: build the main.trace.js file from main.js,
+* `smart-preprocessor main.js main.debug.js --debug`: build the *main.debug.js* file from *main.js*, using the *debug* parameter
+* `smart-preprocessor main.js main.trace.js --loglevel trace`: build the *main.trace.js* file from *main.js*,
   setting the *loglevel* parameter to 'trace'
 
 
@@ -64,14 +65,14 @@ Smart Preprocessor can *require* a module while pre-processing it on-the-fly.
 
 
 
-### .require( module , switchs , [ options ] )
+### .require( module , switches , [ options ] )
 
 * module: `string` the module to load
-* switchs: `object` an object containing the preprocessor switchs
-* options: `object` *optional*, contains some options where:
-	* multi: if the module is required multiple times with different *switchs* objects, multiple
+* switches: `object` an object containing the preprocessor switches
+* options: `object` *optional*, contains some options, available options are:
+	* multi: if the module is required multiple times with different *switches* objects, multiple
 		instances of the module will be spawned. Without this options, subsequent *require* will use the first
-		instance even if the *switchs* object are different. Some node.js module execute code
+		instance even if the *switches* object is different. Some node.js module execute code
 		at require-time, that's why the default behaviour is to share only one instance, just like a normal
 		*require()* does.
 
@@ -81,16 +82,16 @@ var spp = require( 'smart-preprocessor' ) ;	// Load the smart preprocessor modul
 var myModule = spp.require( 'my-module' , { config1: true , config2: 4 } ) ;
 ```
 
-When loading a module not lying in a `node_modules` directory, you must provide the full path of the file, 
-one may simply prepend `__dirname` to the path's string.
+When loading a module that is not lying in a `node_modules` directory, you must provide the full path of the file.
+One may simply prepend `__dirname` to the path string.
 
 
 
-<a name="recommandations"></a>
-## Recommandations / Good practices
+<a name="recommendations"></a>
+## Recommendations / Good practices
 
-* Your source code should be working without any preprocessing, that's what make
-  [Preprocessor.js](http://npmjs.org/package/preprocessor) a bad thing, Javascript must run unprocessed.
+* Your source code should be working without any preprocessing. That's what make
+  [Preprocessor.js](http://npmjs.org/package/preprocessor) a bad thing, Javascript must run unprocessed, out of the box.
 * In fact, your source code should be your standard / production version
 * Use runtime preprocessor's *.require()* only for development, debugging, or any kind of fail-safe or emergency mode,
   that's not a good practice to use it for production running in standard mode.
@@ -108,16 +109,16 @@ one may simply prepend `__dirname` to the path's string.
 The Javascript source file should contains some preprocessor command.
 All preprocessor command are hidden into comments.
 
-In fact, many command works by commenting or uncommenting lines.
+In fact, many commands work by commenting or uncommenting a line or a block.
 
 A preprocessor command start with a *preprocessor mark*.
 
 A *preprocessor mark* is a *comment mark* followed by a *#*.
 
-For inline command, this will start by `//#` without spaces.
+For inline command, this will start with `//#`.
 
 For multi-line command, this will start with either `/*#` or `//*#`, see below the differences.
-Multi-line command stop at `//*/`.
+Multi-line commands stop at `//*/`.
 
 
 
@@ -125,7 +126,7 @@ Multi-line command stop at `//*/`.
 
 #### `//# <expression> : <inline-code>`
 
-If *expression* is truthy, then the code is uncommented.
+If *expression* is true, then the code is uncommented.
 
 Example, source code of *hello.js*:
 ```js
@@ -143,7 +144,7 @@ console.log( myVar ) ;
 console.log( 'world!' ) ;
 ```
 
-If you had typed `smart-preprocessor hello.js hello.pproc.js --whatever`, *hello.pproc.js* would be:
+If you had typed `smart-preprocessor hello.js hello.pproc.js --whatever`, *hello.pproc.js* would had been:
 
 ```js
 console.log( 'Hello' ) ;
@@ -157,7 +158,7 @@ console.log( 'world!' ) ;
 
 #### `<inline-code> //# <expression> !`
 
-If *expression* is truthy, then the code is commented.
+If *expression* is true, then the code is commented.
 
 Example, source code of *hello.js*:
 ```js
@@ -175,7 +176,7 @@ console.log( 'Hello' ) ;
 console.log( 'world!' ) ;
 ```
 
-If you had typed `smart-preprocessor hello.js hello.pproc.js --whatever`, *hello.pproc.js* would be:
+If you had typed `smart-preprocessor hello.js hello.pproc.js --whatever`, *hello.pproc.js* would had been:
 
 ```js
 console.log( 'Hello' ) ;
@@ -211,7 +212,7 @@ console.log( myVar2 ) ;
 console.log( 'world!' ) ;
 ```
 
-If you had typed `smart-preprocessor hello.js hello.pproc.js --whatever`, *hello.pproc.js* would be:
+If you had typed `smart-preprocessor hello.js hello.pproc.js --whatever`, *hello.pproc.js* would had been:
 
 ```js
 console.log( 'Hello' ) ;
@@ -226,7 +227,7 @@ console.log( 'world!' ) ;
 
 #### `//*# <expression> :\n <multiline-code> \n//*/`
 
-If *expression* is truthy, the code is commented.
+If *expression* is true, the code is commented.
 
 Example, source code of *hello.js*:
 ```js
@@ -250,7 +251,7 @@ console.log( myVar2 ) ;
 console.log( 'world!' ) ;
 ```
 
-If you had typed `smart-preprocessor hello.js hello.pproc.js --whatever`, *hello.pproc.js* would be:
+If you had typed `smart-preprocessor hello.js hello.pproc.js --whatever`, *hello.pproc.js* would had been:
 
 ```js
 console.log( 'Hello' ) ;
@@ -272,7 +273,7 @@ A value is typically a string.
 However, any string that can be parsed as a float will be converted to a *number*.
 The same rule apply for the switch itself.
 
-This is the list of all type comparison.
+This is the list of all possible comparisons.
 
 
 
@@ -281,15 +282,17 @@ This is the list of all type comparison.
 This is the simplest check.
 If the switch is defined, the condition is true.
 
-**Please be extremely careful: unlike Javascript, even if a switch's value is 0, the condition will still be true**.
+**Please be extremely careful: unlike Javascript, even if a switch's value is 0, the condition will still hold true**.
 **This expression does not check if the switch is truthy or falsy, it checks if it exists.**
-Also there are [strong rationals behind this design)(#recommandations).
+There are [strong rationales behind this design](#recommendations).
 
 Example:
 
 ```js
 //# debug : console.log( myVar ) ;
 ```
+
+If a *debug* switch exists, whatever its value, then the code will be uncommented.
 
 
 
@@ -303,7 +306,7 @@ Example:
 //# loglevel = trace : console.log( myVar ) ;
 ```
 
-If a switch *loglevel* exists and is set to "trace", then the code is uncommented.
+If a *loglevel* switch exists and is set to "trace", then the code will be uncommented.
 
 
 
@@ -318,7 +321,7 @@ Example:
 //# loglevel >= 3 : console.log( myVar ) ;
 ```
 
-If a switch *loglevel* exists, is a number and is greater than or equals to 3, then the code is uncommented.
+If a *loglevel* switch exists, is a number and is greater than or equal to 3, then the code will be uncommented.
 
 
 
@@ -327,7 +330,7 @@ If a switch *loglevel* exists, is a number and is greater than or equals to 3, t
 It is possible to define aliases.
 Each alias is bound to a particular switch.
 
-When an expression involve a switch that has aliases, the preprocessor will try to perform alias substitution on 
+When an expression involves a switch that has aliases, the preprocessor will try to perform *alias substitution* on 
 both the switch's value and the value against whom the switch is compared.
 
 The syntax of alias definition is `//# <switch> # <alias> ~ <value>`.
@@ -346,14 +349,14 @@ Example:
 We defined aliases for the *loglevel* switch.
 If this switch value is one of *error, warning, verbose* or *trace*, it will be replaced respectively by 0, 1, 2 or 3.
 Then we have a conditional syntax, comparing against *warning*... *warning* is replaced by *1* beforehand.
-Therefore, if the *loglevel* switch is *warning*, *verbose*, *trace* or any number greater than or equals to 3,
+Therefore, if the *loglevel* switch is *warning*, *verbose*, *trace* or any number greater than or equal to 3,
 the code will be uncommented.
 
 Benefits of aliases:
 
-* it can be thought as defining a constant
-* it can be thought as defining an enum
-* it can be used to perform *greater than* or *lesser than* comparison with strings
+* it can be thought as a constant
+* it can be thought as an enum
+* it can be used to perform *greater than* or *lesser than* comparisons between strings
 
 
 
@@ -377,14 +380,14 @@ var runningLogLevel ;
 runningLogLevel = 3 ;
 ```
 
-If you had typed `smart-preprocessor code.js code.pproc.js --loglevel warning`, *code.pproc.js* would be:
+If you had typed `smart-preprocessor code.js code.pproc.js --loglevel warning`, *code.pproc.js* would had been:
 
 ```js
 var runningLogLevel ;
 runningLogLevel = 'warning' ;
 ```
 
-If you had typed `smart-preprocessor code.js code.pproc.js --loglevel`, *code.pproc.js* would be:
+If you had typed `smart-preprocessor code.js code.pproc.js --loglevel`, *code.pproc.js* would had been:
 
 ```js
 var runningLogLevel ;
@@ -392,8 +395,8 @@ runningLogLevel = true ;
 ```
 
 Please note that if the *loglevel* switch wasn't defined, the whole line would be blank.
-This is still related to the fact that [*no switch = original unprocessed source code*](#recommandations).
-So if you had typed `smart-preprocessor code.js code.pproc.js --whatever`, *code.pproc.js* would be:
+This is still related to the fact that [*no switch = original unprocessed source code*](#recommendations).
+So if you had typed `smart-preprocessor code.js code.pproc.js --whatever`, *code.pproc.js* would had been:
 
 ```js
 var runningLogLevel ;
@@ -402,8 +405,8 @@ var runningLogLevel ;
 
 Also you can set up the value to anything, like (assuming the *loglevel* switch value is 'warning'):
 
-* object: `//# loglevel -> myObject.child.prop` -> `myObject.child.prop = 'warning' ;`
-* array: `//# loglevel -> myArray[ 5 ]` -> `myArray[ 5 ] = 'warning' ;`
+* object: `//# loglevel -> myObject.child.prop` becomes `myObject.child.prop = 'warning' ;`
+* array: `//# loglevel -> myArray[ 5 ]` becomes `myArray[ 5 ] = 'warning' ;`
 
 
 
@@ -416,7 +419,7 @@ For example:
 //# loglevel = trace -> myVar
 ```
 
-... will assign the *loglevel* switch to *myVar* only if loglevel === trace.
+... will assign the *loglevel* switch to *myVar* only if *loglevel === trace*.
 
 Another example:
 
@@ -424,7 +427,7 @@ Another example:
 //# loglevel >= 3 -> myVar
 ```
 
-... will assign the *loglevel* switch to *myVar* only if loglevel is a number and is greater than or equals to 3.
+... will assign the *loglevel* switch to *myVar* only if *loglevel* is a number and is greater than or equal to 3.
 
 
 
@@ -441,11 +444,11 @@ This code:
 //# debug : console.log( 'Warning!' ) ;
 ```
 
-**However spaces between the comment mark ('//' or '/*') and the '#' are \*NOT\* allowed!**
+**However spaces between the comment mark ('//', '/\*' or '//\*') and the '#' are \*NOT\* allowed!**
 
-This is called *the preprocessor mark*.
+This is called *the preprocessor mark*, and therefore should be preserved.
 
-Therefore, the current code has no effect:
+Thus the current code has no effect:
 ```js
 // # debug : console.log( 'Warning!' ) ;
 ```
