@@ -144,7 +144,7 @@ console.log( myVar ) ;
 console.log( 'world!' ) ;
 ```
 
-If you had typed `smart-preprocessor hello.js hello.pproc.js --whatever`, *hello.pproc.js* would be:
+If you had typed `smart-preprocessor hello.js hello.pproc.js --whatever`, *hello.pproc.js* would had been:
 
 ```js
 console.log( 'Hello' ) ;
@@ -176,7 +176,7 @@ console.log( 'Hello' ) ;
 console.log( 'world!' ) ;
 ```
 
-If you had typed `smart-preprocessor hello.js hello.pproc.js --whatever`, *hello.pproc.js* would be:
+If you had typed `smart-preprocessor hello.js hello.pproc.js --whatever`, *hello.pproc.js* would had been:
 
 ```js
 console.log( 'Hello' ) ;
@@ -212,7 +212,7 @@ console.log( myVar2 ) ;
 console.log( 'world!' ) ;
 ```
 
-If you had typed `smart-preprocessor hello.js hello.pproc.js --whatever`, *hello.pproc.js* would be:
+If you had typed `smart-preprocessor hello.js hello.pproc.js --whatever`, *hello.pproc.js* would had been:
 
 ```js
 console.log( 'Hello' ) ;
@@ -251,7 +251,7 @@ console.log( myVar2 ) ;
 console.log( 'world!' ) ;
 ```
 
-If you had typed `smart-preprocessor hello.js hello.pproc.js --whatever`, *hello.pproc.js* would be:
+If you had typed `smart-preprocessor hello.js hello.pproc.js --whatever`, *hello.pproc.js* would had been:
 
 ```js
 console.log( 'Hello' ) ;
@@ -321,7 +321,7 @@ Example:
 //# loglevel >= 3 : console.log( myVar ) ;
 ```
 
-If a *loglevel* switch exists, is a number and is greater than or equals to 3, then the code will be uncommented.
+If a *loglevel* switch exists, is a number and is greater than or equal to 3, then the code will be uncommented.
 
 
 
@@ -330,7 +330,7 @@ If a *loglevel* switch exists, is a number and is greater than or equals to 3, t
 It is possible to define aliases.
 Each alias is bound to a particular switch.
 
-When an expression involve a switch that has aliases, the preprocessor will try to perform alias substitution on 
+When an expression involves a switch that has aliases, the preprocessor will try to perform *alias substitution* on 
 both the switch's value and the value against whom the switch is compared.
 
 The syntax of alias definition is `//# <switch> # <alias> ~ <value>`.
@@ -349,14 +349,14 @@ Example:
 We defined aliases for the *loglevel* switch.
 If this switch value is one of *error, warning, verbose* or *trace*, it will be replaced respectively by 0, 1, 2 or 3.
 Then we have a conditional syntax, comparing against *warning*... *warning* is replaced by *1* beforehand.
-Therefore, if the *loglevel* switch is *warning*, *verbose*, *trace* or any number greater than or equals to 3,
+Therefore, if the *loglevel* switch is *warning*, *verbose*, *trace* or any number greater than or equal to 3,
 the code will be uncommented.
 
 Benefits of aliases:
 
-* it can be thought as defining a constant
-* it can be thought as defining an enum
-* it can be used to perform *greater than* or *lesser than* comparison with strings
+* it can be thought as a constant
+* it can be thought as an enum
+* it can be used to perform *greater than* or *lesser than* comparisons between strings
 
 
 
@@ -380,14 +380,14 @@ var runningLogLevel ;
 runningLogLevel = 3 ;
 ```
 
-If you had typed `smart-preprocessor code.js code.pproc.js --loglevel warning`, *code.pproc.js* would be:
+If you had typed `smart-preprocessor code.js code.pproc.js --loglevel warning`, *code.pproc.js* would had been:
 
 ```js
 var runningLogLevel ;
 runningLogLevel = 'warning' ;
 ```
 
-If you had typed `smart-preprocessor code.js code.pproc.js --loglevel`, *code.pproc.js* would be:
+If you had typed `smart-preprocessor code.js code.pproc.js --loglevel`, *code.pproc.js* would had been:
 
 ```js
 var runningLogLevel ;
@@ -396,7 +396,7 @@ runningLogLevel = true ;
 
 Please note that if the *loglevel* switch wasn't defined, the whole line would be blank.
 This is still related to the fact that [*no switch = original unprocessed source code*](#recommendations).
-So if you had typed `smart-preprocessor code.js code.pproc.js --whatever`, *code.pproc.js* would be:
+So if you had typed `smart-preprocessor code.js code.pproc.js --whatever`, *code.pproc.js* would had been:
 
 ```js
 var runningLogLevel ;
@@ -427,7 +427,7 @@ Another example:
 //# loglevel >= 3 -> myVar
 ```
 
-... will assign the *loglevel* switch to *myVar* only if loglevel is a number and is greater than or equals to 3.
+... will assign the *loglevel* switch to *myVar* only if loglevel is a number and is greater than or equal to 3.
 
 
 
