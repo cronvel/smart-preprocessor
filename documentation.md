@@ -16,7 +16,7 @@ Smart Preprocessor allows you to preprocess a Javascript module, to build modifi
 While it is inspired by the C/C++ preprocessor, the syntax is different in order to be in phase with the Javascript's spirit.
 
 Its syntax is hidden behind the comment mark, so the original source file is
-<a href="#recommandations">perfectly operationnal without any pre-processing</a>.
+[perfectly operationnal without any pre-processing](#recommandations)
 
 
 
@@ -30,7 +30,7 @@ Common use cases:
 
 * you have some server code that works fine, you want to build a browser-compatible version
 
-Be sure to check the <a href="#recommandations">recommandations</a>.
+Be sure to check the [recommandations](#recommandations).
 
 
 
@@ -90,7 +90,7 @@ one may simply prepend `__dirname` to the path's string.
 ## Recommandations / Good practices
 
 * Your source code should be working without any preprocessing, that's what make
-  <a href="http://npmjs.org/package/preprocessor.js">preprocessor.js</a> a bad thing, JS must run unprocessed.
+  [Preprocessor.js](http://npmjs.org/package/preprocessor) a bad thing, Javascript must run unprocessed.
 * In fact, your source code should be your standard / production version
 * Use runtime preprocessor's *.require()* only for development, debugging, or any kind of fail-safe or emergency mode,
   that's not a good practice to use it for production running in standard mode.
@@ -274,7 +274,7 @@ If the switch is defined, the condition is true.
 
 **Please be extremely careful: unlike Javascript, even if a switch's value is 0, the condition will still be true**.
 **This expression does not check if the switch is truthy or falsy, it checks if it exists.**
-Also there are <a href="#recommandations">strong rationals behind this design</a>.
+Also there are [strong rationals behind this design)(#recommandations).
 
 Example:
 
@@ -340,11 +340,73 @@ Then we have a conditional syntax, comparing against *warning*... *warning* is r
 Therefore, if the *loglevel* switch is *warning*, *verbose*, *trace* or any number greater than or equals to 3,
 the code will be uncommented.
 
+Benefits of aliases:
+
+* it can be thought as defining a constant
+* it can be thought as defining an enum
+* it can be used to perform *greater than* or *lesser than* comparison with strings
 
 
-### Assigment
 
-................................... TODO!!! ....................
+### Assignment
 
+It is possible to assign a switch's value to a Javascript variable.
+
+The syntax is `//# <switch> -> <Javascript-variable>`.
+
+Example, code.js:
+```js
+var runningLogLevel ;
+//# loglevel -> runningLogLevel
+```
+
+After running in a shell the command `smart-preprocessor code.js code.pproc.js --loglevel 3`, you get a *code.pproc.js*
+file with this content:
+
+```js
+var runningLogLevel ;
+runningLogLevel = 3 ;
+```
+
+If you had typed `smart-preprocessor code.js code.pproc.js --loglevel warning`, *code.pproc.js* would be:
+
+```js
+var runningLogLevel ;
+runningLogLevel = 'warning' ;
+```
+
+If you had typed `smart-preprocessor code.js code.pproc.js --loglevel`, *code.pproc.js* would be:
+
+```js
+var runningLogLevel ;
+runningLogLevel = true ;
+```
+
+Please note that if the *loglevel* switch wasn't defined, the whole line would be blank.
+This is still related to the fact that [*no switch = original unprocessed source code*](#recommandations).
+So if you had typed `smart-preprocessor code.js code.pproc.js --whatever`, *code.pproc.js* would be:
+
+```js
+var runningLogLevel ;
+
+```
+
+Also you can set up the value to anything, like (assuming the *loglevel* switch value is 'warning'):
+
+* object: `//# loglevel -> myObject.child.prop` -> `myObject.child.prop = 'warning' ;`
+* array: `//# loglevel -> myArray[ 5 ]` -> `myArray[ 5 ] = 'warning' ;`
+
+
+
+Finally, it is possible to write conditional assignment.
+The syntax is simply a mix of the conditional syntax and the assignment syntax.
+
+For example:
+
+```js
+//# loglevel = trace -> myVar
+```
+
+... will only assign the *loglevel* switch to *myVar* only if loglevel === trace.
 
 
