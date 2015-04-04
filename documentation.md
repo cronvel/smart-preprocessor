@@ -20,10 +20,10 @@ Its syntax is hidden behind the comment mark, so the original source file is
 
 
 
-Common use cases: 
+###### Common use cases: 
 
-* you want a lot of logs in development mode, but you don't even want that the production code had to filter out
-  them with dozens of *if* statement.
+* you want a lot of logs in development mode, but you don't even want that the production code had to filter them out
+  with dozens of *if* statement.
 
 * your source code use specific feature of an engine, namely *io.js*, but you have specified an alternative code
   that is compatible with *node.js*.
