@@ -405,8 +405,8 @@ var runningLogLevel ;
 
 Also you can set up the value to anything, like (assuming the *loglevel* switch value is 'warning'):
 
-* object: `//# loglevel -> myObject.child.prop` -> `myObject.child.prop = 'warning' ;`
-* array: `//# loglevel -> myArray[ 5 ]` -> `myArray[ 5 ] = 'warning' ;`
+* object: `//# loglevel -> myObject.child.prop` becomes `myObject.child.prop = 'warning' ;`
+* array: `//# loglevel -> myArray[ 5 ]` becomes `myArray[ 5 ] = 'warning' ;`
 
 
 
@@ -419,7 +419,7 @@ For example:
 //# loglevel = trace -> myVar
 ```
 
-... will assign the *loglevel* switch to *myVar* only if loglevel === trace.
+... will assign the *loglevel* switch to *myVar* only if *loglevel === trace*.
 
 Another example:
 
@@ -427,7 +427,7 @@ Another example:
 //# loglevel >= 3 -> myVar
 ```
 
-... will assign the *loglevel* switch to *myVar* only if loglevel is a number and is greater than or equal to 3.
+... will assign the *loglevel* switch to *myVar* only if *loglevel* is a number and is greater than or equal to 3.
 
 
 
@@ -444,7 +444,7 @@ This code:
 //# debug : console.log( 'Warning!' ) ;
 ```
 
-**However spaces between the comment mark ('//' or '/*') and the '#' are \*NOT\* allowed!**
+**However spaces between the comment mark ('//', '/\*' or '//\*') and the '#' are \*NOT\* allowed!**
 
 This is called *the preprocessor mark*.
 
