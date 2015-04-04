@@ -284,13 +284,15 @@ If the switch is defined, the condition is true.
 
 **Please be extremely careful: unlike Javascript, even if a switch's value is 0, the condition will still hold true**.
 **This expression does not check if the switch is truthy or falsy, it checks if it exists.**
-There are [strong rationals behind this design](#recommendations).
+There are [strong rationales behind this design](#recommendations).
 
 Example:
 
 ```js
 //# debug : console.log( myVar ) ;
 ```
+
+If a *debug* switch exists, whatever its value, then the code will be uncommented.
 
 
 
@@ -304,7 +306,7 @@ Example:
 //# loglevel = trace : console.log( myVar ) ;
 ```
 
-If a switch *loglevel* exists and is set to "trace", then the code is uncommented.
+If a *loglevel* switch exists and is set to "trace", then the code will be uncommented.
 
 
 
@@ -319,7 +321,7 @@ Example:
 //# loglevel >= 3 : console.log( myVar ) ;
 ```
 
-If a switch *loglevel* exists, is a number and is greater than or equals to 3, then the code is uncommented.
+If a *loglevel* switch exists, is a number and is greater than or equals to 3, then the code will be uncommented.
 
 
 
