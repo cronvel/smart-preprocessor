@@ -10,10 +10,10 @@ A smart preprocessor for Node.js.
 
 
 
-Smart Preprocessor allows you to preprocess a Javascript module, to build modified versions or even load at run-time 
-(*require()*) a modified version of the code.
+Smart Preprocessor allows you to preprocess a Javascript module, to build modified versions of the module,
+or even load a modified version of the module at run-time (*require()*).
 
-While it is inspired by the C/C++ preprocessor, the syntax is different in order to be in phase with the Javascript's spirit.
+While it is inspired by the C/C++ preprocessor, the syntax is different to be more in phase with the Javascript's spirit.
 
 Its syntax is hidden behind the comment mark, so the original source file is
 [perfectly operationnal without any pre-processing](#recommandations)
