@@ -16,7 +16,7 @@ or even load a modified version of the module at run-time (*require()*).
 While it is inspired by the C/C++ preprocessor, the syntax is different to be more in phase with the Javascript's spirit.
 
 Its syntax is hidden behind the comment mark, so the original source file is
-[perfectly operational without any pre-processing](#recommandations)
+[perfectly operational without any pre-processing](#recommendations)
 
 
 
@@ -30,7 +30,7 @@ Its syntax is hidden behind the comment mark, so the original source file is
 
 * you have some server code that works fine, you want to build a browser-compatible version
 
-Be sure to check the [recommandations](#recommandations).
+Be sure to check the [recommendations](#recommendations).
 
 
 
@@ -69,10 +69,10 @@ Smart Preprocessor can *require* a module while pre-processing it on-the-fly.
 
 * module: `string` the module to load
 * switches: `object` an object containing the preprocessor switches
-* options: `object` *optional*, contains some options where:
+* options: `object` *optional*, contains some options, available options are:
 	* multi: if the module is required multiple times with different *switches* objects, multiple
 		instances of the module will be spawned. Without this options, subsequent *require* will use the first
-		instance even if the *switches* object are different. Some node.js module execute code
+		instance even if the *switches* object is different. Some node.js module execute code
 		at require-time, that's why the default behaviour is to share only one instance, just like a normal
 		*require()* does.
 
@@ -82,16 +82,16 @@ var spp = require( 'smart-preprocessor' ) ;	// Load the smart preprocessor modul
 var myModule = spp.require( 'my-module' , { config1: true , config2: 4 } ) ;
 ```
 
-When loading a module not lying in a `node_modules` directory, you must provide the full path of the file, 
-one may simply prepend `__dirname` to the path's string.
+When loading a module that is not lying in a `node_modules` directory, you must provide the full path of the file.
+One may simply prepend `__dirname` to the path string.
 
 
 
-<a name="recommandations"></a>
-## Recommandations / Good practices
+<a name="recommendations"></a>
+## Recommendations / Good practices
 
-* Your source code should be working without any preprocessing, that's what make
-  [Preprocessor.js](http://npmjs.org/package/preprocessor) a bad thing, Javascript must run unprocessed.
+* Your source code should be working without any preprocessing. That's what make
+  [Preprocessor.js](http://npmjs.org/package/preprocessor) a bad thing, Javascript must run unprocessed, out of the box.
 * In fact, your source code should be your standard / production version
 * Use runtime preprocessor's *.require()* only for development, debugging, or any kind of fail-safe or emergency mode,
   that's not a good practice to use it for production running in standard mode.
@@ -109,16 +109,16 @@ one may simply prepend `__dirname` to the path's string.
 The Javascript source file should contains some preprocessor command.
 All preprocessor command are hidden into comments.
 
-In fact, many command works by commenting or uncommenting lines.
+In fact, many commands work by commenting or uncommenting a line or a block.
 
 A preprocessor command start with a *preprocessor mark*.
 
 A *preprocessor mark* is a *comment mark* followed by a *#*.
 
-For inline command, this will start by `//#` without spaces.
+For inline command, this will start with `//#`.
 
 For multi-line command, this will start with either `/*#` or `//*#`, see below the differences.
-Multi-line command stop at `//*/`.
+Multi-line commands stop at `//*/`.
 
 
 
@@ -126,7 +126,7 @@ Multi-line command stop at `//*/`.
 
 #### `//# <expression> : <inline-code>`
 
-If *expression* is truthy, then the code is uncommented.
+If *expression* is true, then the code is uncommented.
 
 Example, source code of *hello.js*:
 ```js
@@ -158,7 +158,7 @@ console.log( 'world!' ) ;
 
 #### `<inline-code> //# <expression> !`
 
-If *expression* is truthy, then the code is commented.
+If *expression* is true, then the code is commented.
 
 Example, source code of *hello.js*:
 ```js
@@ -227,7 +227,7 @@ console.log( 'world!' ) ;
 
 #### `//*# <expression> :\n <multiline-code> \n//*/`
 
-If *expression* is truthy, the code is commented.
+If *expression* is true, the code is commented.
 
 Example, source code of *hello.js*:
 ```js
@@ -273,7 +273,7 @@ A value is typically a string.
 However, any string that can be parsed as a float will be converted to a *number*.
 The same rule apply for the switch itself.
 
-This is the list of all type comparison.
+This is the list of all possible comparisons.
 
 
 
@@ -282,9 +282,9 @@ This is the list of all type comparison.
 This is the simplest check.
 If the switch is defined, the condition is true.
 
-**Please be extremely careful: unlike Javascript, even if a switch's value is 0, the condition will still be true**.
+**Please be extremely careful: unlike Javascript, even if a switch's value is 0, the condition will still hold true**.
 **This expression does not check if the switch is truthy or falsy, it checks if it exists.**
-Also there are [strong rationals behind this design)(#recommandations).
+There are [strong rationals behind this design](#recommendations).
 
 Example:
 
@@ -393,7 +393,7 @@ runningLogLevel = true ;
 ```
 
 Please note that if the *loglevel* switch wasn't defined, the whole line would be blank.
-This is still related to the fact that [*no switch = original unprocessed source code*](#recommandations).
+This is still related to the fact that [*no switch = original unprocessed source code*](#recommendations).
 So if you had typed `smart-preprocessor code.js code.pproc.js --whatever`, *code.pproc.js* would be:
 
 ```js
