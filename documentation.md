@@ -446,9 +446,9 @@ This code:
 
 **However spaces between the comment mark ('//', '/\*' or '//\*') and the '#' are \*NOT\* allowed!**
 
-This is called *the preprocessor mark*.
+This is called *the preprocessor mark*, and therefore should be preserved.
 
-Therefore, the current code has no effect:
+Thus the current code has no effect:
 ```js
 // # debug : console.log( 'Warning!' ) ;
 ```
