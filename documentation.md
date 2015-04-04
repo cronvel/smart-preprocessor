@@ -44,16 +44,17 @@ The syntax is simple:
 
 `smart-preprocessor <source-file> [dest-file] [--switch1 [value1]] [--switch2 [value2]] [...]`.
 
-If *dest* is not passed, the standard output will be assumed. It's useful if we have to pipe to another program.
+If *dest* is not given, the standard output will be assumed. It's useful if we have to pipe that into another program.
 
-All the *switch* are identifiers we have used in our source-file. See below.
-Any alpha-numric string can be used as a switch.
+All *switches* are identifiers we have used in our source-file. See below.
+
+Any alpha-numric string can be used as a *switch*.
 Just try to be consistent with other projects.
 
 Some examples:
 
-* `smart-preprocessor main.js main.debug.js --debug`: build the main.debug.js file from main.js, using the *debug* parameter
-* `smart-preprocessor main.js main.trace.js --loglevel trace`: build the main.trace.js file from main.js,
+* `smart-preprocessor main.js main.debug.js --debug`: build the *main.debug.js* file from *main.js*, using the *debug* parameter
+* `smart-preprocessor main.js main.trace.js --loglevel trace`: build the *main.trace.js* file from *main.js*,
   setting the *loglevel* parameter to 'trace'
 
 
@@ -64,14 +65,14 @@ Smart Preprocessor can *require* a module while pre-processing it on-the-fly.
 
 
 
-### .require( module , switchs , [ options ] )
+### .require( module , switches , [ options ] )
 
 * module: `string` the module to load
-* switchs: `object` an object containing the preprocessor switchs
+* switches: `object` an object containing the preprocessor switches
 * options: `object` *optional*, contains some options where:
-	* multi: if the module is required multiple times with different *switchs* objects, multiple
+	* multi: if the module is required multiple times with different *switches* objects, multiple
 		instances of the module will be spawned. Without this options, subsequent *require* will use the first
-		instance even if the *switchs* object are different. Some node.js module execute code
+		instance even if the *switches* object are different. Some node.js module execute code
 		at require-time, that's why the default behaviour is to share only one instance, just like a normal
 		*require()* does.
 

@@ -444,11 +444,11 @@ describe( "Preprocessor" , function() {
 				"console.log( '[TRACE] Current state: ' , state ) ;\n" +
 				"fn2() ;\n" ;
 			
-			var check = function( fcode , op , rightValue , switchs , expected ) {
+			var check = function( fcode , op , rightValue , switches , expected ) {
 				
 				var code = string.format( fcode , op , rightValue ) ;
 				
-				expect( spp.preprocess( code , switchs ) ).to.be( expected ) ;
+				expect( spp.preprocess( code , switches ) ).to.be( expected ) ;
 			} ;
 			
 			check( fcode , '<' , 3 , { debug: 1 } , uncommentExpected ) ;
