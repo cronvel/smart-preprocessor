@@ -36,5 +36,20 @@
   "license": "MIT",
   "bugs": {
     "url": "https://github.com/cronvel/smart-preprocessor/issues"
+  },
+  "config": {
+    "tea-time": {
+      "coverDir": [
+        "lib"
+      ]
+    }
+  },
+  "copyright": {
+    "title": "Smart Preprocessor",
+    "years": [
+      2014,
+      2016
+    ],
+    "owner": "Cédric Ronvel"
   }
 }
