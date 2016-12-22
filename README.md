@@ -11,7 +11,7 @@ A smart preprocessor for Node.js.
 
 
 Smart Preprocessor allows you to preprocess a Javascript module, to build modified versions of the module,
-or even load a modified version of the module at run-time (*require()*).
+or even load a modified version of the module at run-time (*module.preprocessorRequire()*).
 
 While it is inspired by the C/C++ preprocessor, the syntax is different to be more in phase with the Javascript's spirit.
 
@@ -65,25 +65,25 @@ Smart Preprocessor can *require* a module while pre-processing it on-the-fly.
 
 
 
-### .require( module , switches , [ options ] )
+### module.preprocessorRequire( modulePath , switches , [ options ] )
 
-* module: `string` the module to load
+* modulePath: `string` the module file path to load
 * switches: `object` an object containing the preprocessor switches
 * options: `object` *optional*, contains some options, available options are:
 	* multi: if the module is required multiple times with different *switches* objects, multiple
 		instances of the module will be spawned. Without this options, subsequent *require* will use the first
-		instance even if the *switches* object is different. Some node.js module execute code
-		at require-time, that's why the default behaviour is to share only one instance, just like a normal
-		*require()* does.
+		instance even if the *switches* object has different options. Some node.js module execute code
+		at require-time, that's why the default behaviour is to share only one instance, just like a normal *require()* does.
 
 ```js
 var spp = require( 'smart-preprocessor' ) ;	// Load the smart preprocessor module
 
-var myModule = spp.require( 'my-module' , { config1: true , config2: 4 } ) ;
+var myModule = module.preprocessorRequire( 'my-module' , { config1: true , config2: 4 } ) ;
 ```
 
-When loading a module that is not lying in a `node_modules` directory, you must provide the full path of the file.
-One may simply prepend `__dirname` to the path string.
+The `.preprocessorRequire()` method is added to the module prototype itself,
+that way, ISO behavior with vanilla `require()` is guaranted.
+Also this method is accessible from files that do not require *'smart-preprocessor'* directly.
 
 
 
@@ -92,15 +92,12 @@ One may simply prepend `__dirname` to the path string.
 
 * Your source code should be working without any preprocessing. That's what make
   [Preprocessor.js](http://npmjs.org/package/preprocessor) a bad thing, Javascript must run unprocessed, out of the box.
-* In fact, your source code should be your standard / production version
-* Use runtime preprocessor's *.require()* only for development, debugging, or any kind of fail-safe or emergency mode,
+* **In fact**, your source code should be your standard / **production** version
+* Use runtime *module.preprocessorRequire()* only for development, debugging, or any kind of fail-safe or emergency mode,
   that's not a good practice to use it for production running in standard mode.
-  By the way, since preprocessor's *.require()* should read your code, write it somewhere and then call the core
-  node.js *require()*, it is slower than normal *require()*. Once your module is cached, it still has to compute a hash
-  to find out the path of the preprocessed file.
 * As you can see, you cannot define a preprocessor switch to false, null, undefined or an empty string.
-  There is nothing close to an *else* statement either. Why? Because invoking Smart Preprocessor without any switch
-  **\*MUST\*** be equivalent to the original unprocessed code.
+  There is nothing close to an *else* statement either. Why? Because invoking Smart Preprocessor without
+  any switch **MUST** be equivalent to the original unprocessed code.
 
 
 
