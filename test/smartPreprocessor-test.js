@@ -544,51 +544,34 @@ describe( "Require" , function() {
 	
 	it( "Should preprocess and require multiple instances of the same module" , function() {
 		
-		var catched , mod ;
+		var mod ;
 		
-		
-		catched = false ;
-		
-		try {
-			// It MUST fail
-			mod = spp.require( './codeSample/module1.js' ) ;
-		}
-		catch ( error ) {
-			//console.log( error ) ;
-			catched = true ;
-		}
-		
-		expect( catched ).to.be.ok() ;
-		
-		mod = spp.require( __dirname + '/codeSample/module1.js' , {} , { multi: true } ) ;
+		mod = module.preprocessorRequire( './codeSample/module1.js' , {} , { multi: true } ) ;
 		expect( mod.fixedText() ).to.be( 'original' ) ;
 		expect( mod.value() ).to.be( undefined ) ;
 		
-		mod = spp.require( __dirname + '/codeSample/module1.js' , { modified: true } , { multi: true } ) ;
+		mod = module.preprocessorRequire( './codeSample/module1.js' , { modified: true } , { multi: true } ) ;
 		expect( mod.fixedText() ).to.be( 'modified' ) ;
 		expect( mod.value() ).to.be( undefined ) ;
 		
-		mod = spp.require( __dirname + '/codeSample/module1.js' , { param: 'toto' } , { multi: true } ) ;
+		mod = module.preprocessorRequire( './codeSample/module1.js' , { param: 'toto' } , { multi: true } ) ;
 		expect( mod.fixedText() ).to.be( 'original' ) ;
 		expect( mod.value() ).to.be( 'toto' ) ;
 		
-		mod = spp.require( __dirname + '/codeSample/module1.js' , { param: true } , { multi: true } ) ;
+		mod = module.preprocessorRequire( './codeSample/module1.js' , { param: true } , { multi: true } ) ;
 		expect( mod.fixedText() ).to.be( 'original' ) ;
 		expect( mod.value() ).to.be( true ) ;
 		
-		mod = spp.require( __dirname + '/codeSample/module1.js' , { param: 42 } , { multi: true } ) ;
+		mod = module.preprocessorRequire( './codeSample/module1.js' , { param: 42 } , { multi: true } ) ;
 		expect( mod.fixedText() ).to.be( 'original' ) ;
 		expect( mod.value() ).to.be( 42 ) ;
 		
-		mod = spp.require( __dirname + '/codeSample/module1.js' , { param: "42" } , { multi: true } ) ;
+		mod = module.preprocessorRequire( './codeSample/module1.js' , { param: "42" } , { multi: true } ) ;
 		expect( mod.fixedText() ).to.be( 'original' ) ;
 		expect( mod.value() ).to.be( 42 ) ;
 	} ) ;
 	
 	it( "Test the cache of .require()" ) ;
 } ) ;
-
-
-
 
 
