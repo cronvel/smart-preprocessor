@@ -33,8 +33,6 @@ var spp = require( '../lib/smartPreprocessor.js' ) ;
 var string = require( 'string-kit' ) ;
 var fs = require( 'fs' ) ;
 
-var expect = require( 'expect.js' ) ;
-
 
 
 

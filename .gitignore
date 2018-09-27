@@ -29,6 +29,7 @@ lcov.info
 *.pid
 *.gz
 
+package-lock.json
 pids
 logs
 results
