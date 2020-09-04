@@ -185,7 +185,7 @@ console.log( 'world!' ) ;
 
 #### `/*# <expression> :\n <multiline-code> \n//*/`
 
-If <expression> is set, the code is uncommented.
+If *expression* is set, the code is uncommented.
 
 Example, source code of *hello.js*:
 ```js
